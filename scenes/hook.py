@@ -36,7 +36,8 @@ def play(scene: Scene) -> None:
     rotations = [-6, 4, -3, 7, -5, 3]
     for (label, date), pos, rot in zip(content.HOOK_CARDS, positions, rotations):
         card = ExperienceCard(category=label, date=date, width=1.85, height=0.62,
-                              title_font_size=16, date_font_size=14)
+                              title_font_size=16, date_font_size=14,
+                              badge_font_size=14)
         card.move_to([pos[0], pos[1], 0])
         card.rotate(rot * 0.0174533)
         cards.add(card)

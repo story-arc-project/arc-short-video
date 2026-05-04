@@ -3,7 +3,9 @@ name: Render & publish promo video
 on:
   push:
     branches:
-      - claude/arc-promo-video-JcoBb
+      - main
+  pull_request:
+    branches:
       - main
   workflow_dispatch:
     inputs:
@@ -25,11 +27,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install system deps (cairo, pango, ffmpeg, Korean fonts)
+      - name: Install system deps (cairo, pango, ffmpeg)
+        # Korean fonts are bundled in fonts/ (Pretendard, SIL OFL) and
+        # registered at runtime by components/fonts.py — no apt install needed.
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libpango1.0-dev libcairo2-dev pkg-config ffmpeg fonts-noto-cjk
+            libpango1.0-dev libcairo2-dev pkg-config ffmpeg
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -80,6 +84,10 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish to GitHub Release (rolling "latest-render")
+        # PR builds are previews — the artifact step above already exposes
+        # them. Only the canonical main-branch render gets published as the
+        # rolling release so PRs can't overwrite latest-render before merge.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ASSET: ${{ steps.stage.outputs.asset_path }}

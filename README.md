@@ -18,15 +18,16 @@ Requires Python 3.10+, ffmpeg, libcairo, and libpango (Manim's runtime deps).
 On Ubuntu/Debian:
 
 ```bash
-sudo apt-get install -y libpango1.0-dev libcairo2-dev pkg-config ffmpeg fonts-noto-cjk
+sudo apt-get install -y libpango1.0-dev libcairo2-dev pkg-config ffmpeg
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-The font helper falls back to Noto Sans CJK KR (the Korean glyph variant
-`fonts-noto-cjk` ships with) if Pretendard isn't installed. To use Pretendard
-instead, install the OTF files at OS level — the helper picks them up
-automatically next render.
+Korean typography ships with the repo: `fonts/` contains Pretendard
+(SIL OFL 1.1) which `components/fonts.py` registers with Pango at import.
+On macOS the renderer prefers the system **Apple SD Gothic Neo** (Apple
+산돌고딕) automatically and uses bundled Pretendard everywhere else, so
+output looks identical across local dev and CI.
 
 
 ## Render
@@ -68,11 +69,13 @@ arc-short-video/
 │   ├── theme.py               # color + font tokens (mirrored from arc-frontend)
 │   ├── content.py             # every on-screen string + sample dataset
 │   └── timing.py              # per-beat seconds, validated at import
+├── fonts/                     # bundled Pretendard OTFs (SIL OFL fallback)
 ├── components/
-│   ├── fonts.py               # Korean font resolver + width-fit helper
+│   ├── fonts.py               # registers bundled fonts + Korean font resolver
 │   ├── badge.py               # pill badge (brand / gray / success variants)
 │   ├── card.py                # ExperienceCard = badge + title + date row
 │   ├── browser_chrome.py      # macOS window chrome around mockup beats
+│   ├── analysis_panel.py      # individual experience analysis (header + sections)
 │   └── bar_chart.py           # animated horizontal bars + percent counters
 └── scenes/
     ├── promo.py               # ARCPromo(Scene) — calls each beat in order
@@ -92,7 +95,7 @@ arc-short-video/
 | Hook    | 0.0 – 2.5s   | "흩어진 경험들" — six fragment cards drift in. |
 | Logo    | 2.5 – 4.5s   | Cards collapse → ARC wordmark + tagline. |
 | Record  | 4.5 – 9.0s   | Browser mockup of the archive screen with category chips, three experience cards, and the `+ 새 경험 기록하기` CTA. |
-| Analyze | 9.0 – 13.5s  | Keyword analysis chart — seven horizontal bars fill left-to-right with percent counters. |
+| Analyze | 9.0 – 13.5s  | Individual experience analysis — header card for one experience, then 강점 chips, 배운 점 bullets, and 추천 키워드 chips reveal in sequence. |
 | Use     | 13.5 – 17.5s | Export tab strip cycles through 이력서 → 자기소개서 → 포트폴리오 → 전자명함, swapping in a mock preview each time. |
 | Outro   | 17.5 – 20.0s | ARC wordmark + tagline + `story-arc.org`. |
 

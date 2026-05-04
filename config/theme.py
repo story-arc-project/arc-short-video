@@ -25,12 +25,14 @@ ERROR          = "#f04452"
 INFO           = "#3182f6"
 
 # ----- Typography ------------------------------------------------------------
-# manim's Text() picks up any system-installed font by name. We try Pretendard
-# first; on systems that don't have it, the fallback chain still produces a
-# readable Korean glyph.
-FONT_HEADING   = "Pretendard"
-FONT_BODY      = "Pretendard"
-FONT_FALLBACKS = ("Noto Sans CJK KR", "Noto Sans KR", "Apple SD Gothic Neo")
+# Apple SD Gothic Neo (Apple 산돌고딕) is the macOS system Korean font and the
+# typography we want everywhere. The repo bundles Pretendard under ``fonts/``
+# as a SIL-OFL fallback that visually mirrors Apple SD Gothic Neo on systems
+# without it (Linux dev boxes, GitHub Actions CI). Resolution order is:
+# Apple SD Gothic Neo → bundled Pretendard → Noto CJK.
+FONT_HEADING   = "Apple SD Gothic Neo"
+FONT_BODY      = "Apple SD Gothic Neo"
+FONT_FALLBACKS = ("Pretendard", "Noto Sans CJK KR", "Noto Sans KR")
 
 WEIGHT_REGULAR  = "NORMAL"
 WEIGHT_SEMIBOLD = "SEMIBOLD"
