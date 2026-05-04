@@ -106,80 +106,38 @@ ffprobe -v error -show_entries stream=width,height,duration -of default=nw=1 \
 ```
 
 
-## CI: auto-render and upload to Google Drive
+## CI: auto-render and publish to GitHub Releases
 
 The `.github/workflows/render.yml` action renders the video on every push and
-uploads the mp4 to a Google Drive folder you control. It also keeps a copy as
-a 30-day GitHub Actions artifact, so even if the Drive upload fails you can
-still grab the video from the workflow run page.
+publishes the mp4 to a **rolling GitHub Release** named `latest-render`.
+A copy is also kept as a 30-day workflow artifact for short-term recovery.
 
-The workflow authenticates to Drive with a **service account** — no OAuth
-popup, no browser dance, suitable for headless / remote setup. It needs two
-GitHub repository secrets:
+**No secrets, no third-party setup.** The workflow uses the built-in
+`GITHUB_TOKEN`, so you (or anyone with repo read access) can grab the latest
+mp4 from one stable URL — no Google Drive, no service accounts, no OAuth.
 
-| Secret | Value |
-|---|---|
-| `GDRIVE_SERVICE_ACCOUNT_JSON` | The full JSON key file for a Google Cloud service account that has Editor access to the destination Drive folder. |
-| `RCLONE_DRIVE_FOLDER_ID`      | The Drive folder ID where renders should land (the part after `/folders/` in the folder's URL). |
+### Where to download
 
-### One-time service account setup (~10 min, web only — no OAuth popup)
+After the workflow runs, the mp4 lives at:
 
-1. **Go to Google Cloud Console** → https://console.cloud.google.com and sign in
-   with the Google account that owns the destination Drive.
+```
+https://github.com/story-arc-project/arc-short-video/releases/tag/latest-render
+```
 
-2. **Create or select a project.** Top bar → project dropdown → New project.
-   Any name (e.g. `arc-promo-video`).
-
-3. **Enable the Drive API** for that project.
-   Search bar → "Google Drive API" → Enable.
-
-4. **Create the service account.**
-   Sidebar → IAM & Admin → Service Accounts → Create service account.
-   - Name: `arc-promo-uploader` (anything works)
-   - Skip optional steps (no roles needed — Drive permissions come from
-     folder sharing in step 7, not from GCP IAM).
-   - Done.
-
-5. **Create a JSON key.** Click the service account → Keys tab → Add key →
-   Create new key → JSON → Create. A `*.json` file downloads automatically.
-   Open it; you'll see fields like `"client_email"` and `"private_key"`.
-
-6. **Note the service account email.** It looks like
-   `arc-promo-uploader@<project-id>.iam.gserviceaccount.com` — visible inside
-   the JSON file (`client_email` field) and on the SA list page.
-
-7. **Share the destination Drive folder with that email.** Open Drive in your
-   browser, create or pick a folder, right-click → Share, paste the SA email,
-   role: **Editor**, send. (Uncheck "Notify people" — the SA isn't a person.)
-
-8. **Grab the folder ID** from the URL while you're there:
-   `https://drive.google.com/drive/folders/<THIS_PART>`.
-
-9. **Add the two GitHub Secrets** at
-   https://github.com/story-arc-project/arc-short-video/settings/secrets/actions
-   → New repository secret:
-   - `GDRIVE_SERVICE_ACCOUNT_JSON` = paste the **entire contents** of the
-     downloaded JSON file (multiline is fine).
-   - `RCLONE_DRIVE_FOLDER_ID`      = the folder ID from step 8.
-
-That's it — the next push runs the workflow and an mp4 named
-`ARCPromo-<timestamp>-<commitsha>.mp4` shows up in your Drive folder.
+Each push **replaces** that release with a fresh asset named
+`ARCPromo-<UTC-timestamp>-<commitsha>.mp4`, so the URL above always points to
+the most recent build. Older renders are not retained on the release (use the
+30-day workflow artifacts or re-render from history if you need an older
+version).
 
 ### Triggering manually
 
-You can also trigger a render without pushing: GitHub → Actions tab →
-"Render & upload promo video" → Run workflow. There's a quality dropdown
-(high / medium / low) for faster previews.
+GitHub → Actions tab → **"Render & publish promo video"** → Run workflow.
+There's a quality dropdown (high / medium / low) for faster previews.
 
-### Caveats of the service-account approach
+### Why a rolling release instead of one-per-commit?
 
-- **Files are owned by the service account, not by you.** They live inside
-  your shared folder and you can view, download, copy, or move them anywhere
-  in your Drive. If you ever delete the service account or revoke its
-  Editor permission, the files become inaccessible — so avoid both unless
-  you've already copied the mp4s elsewhere.
-- **Storage doesn't count against your personal Drive quota** — the SA has
-  its own free 15 GB pool.
-- **No quota-share with Workspace shared drives** unless you put the SA on
-  a Shared Drive instead of a regular folder, which is the cleaner long-term
-  setup if you have a Workspace.
+A new release per push would flood the Releases page during iteration. A
+single rolling tag keeps the "latest video" URL stable and clutter-free.
+If you want to immortalize a specific version, push a normal git tag — that
+won't be touched by this workflow.

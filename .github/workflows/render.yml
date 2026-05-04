@@ -1,4 +1,4 @@
-name: Render & upload promo video
+name: Render & publish promo video
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
         options: [high, medium, low]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   render:
@@ -64,47 +64,38 @@ jobs:
           path: media/videos/ARCPromo.mp4
           retention-days: 30
 
-      - name: Install rclone
+      - name: Stage release asset
+        id: stage
         run: |
-          curl -fsSL https://rclone.org/install.sh | sudo bash
-          rclone version
-
-      - name: Configure rclone with service account
-        env:
-          SA_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
-        run: |
-          if [[ -z "${SA_JSON}" ]]; then
-            echo "::error::GDRIVE_SERVICE_ACCOUNT_JSON secret is missing — see README §CI for setup."
-            exit 1
-          fi
-          mkdir -p "$HOME/.config/rclone"
-          sa_path="$HOME/.config/rclone/sa.json"
-          printf '%s' "$SA_JSON" > "$sa_path"
-          chmod 600 "$sa_path"
-          cat > "$HOME/.config/rclone/rclone.conf" <<EOF
-          [gdrive]
-          type = drive
-          scope = drive
-          service_account_file = $sa_path
-          EOF
-
-      - name: Upload to Google Drive
-        env:
-          DRIVE_FOLDER_ID: ${{ secrets.RCLONE_DRIVE_FOLDER_ID }}
-        run: |
-          if [[ -z "${DRIVE_FOLDER_ID}" ]]; then
-            echo "::error::RCLONE_DRIVE_FOLDER_ID secret is missing — see README §CI for setup."
-            exit 1
-          fi
           ts=$(date -u +'%Y%m%d-%H%M%S')
           short_sha=${GITHUB_SHA::7}
-          dest_name="ARCPromo-${ts}-${short_sha}.mp4"
-          # `--drive-root-folder-id` scopes the upload to a folder the
-          # service account has been granted access to. Without it the SA
-          # would try to write to its own (empty) Drive root.
-          rclone copyto \
-            "media/videos/ARCPromo.mp4" \
-            "gdrive:${dest_name}" \
-            --drive-root-folder-id "${DRIVE_FOLDER_ID}" \
-            --progress
-          echo "Uploaded to Google Drive as ${dest_name}"
+          asset_name="ARCPromo-${ts}-${short_sha}.mp4"
+          mkdir -p dist
+          cp media/videos/ARCPromo.mp4 "dist/${asset_name}"
+          {
+            echo "asset_name=${asset_name}"
+            echo "asset_path=dist/${asset_name}"
+            echo "ts=${ts}"
+            echo "short_sha=${short_sha}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish to GitHub Release (rolling "latest-render")
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ASSET: ${{ steps.stage.outputs.asset_path }}
+          NAME:  ${{ steps.stage.outputs.asset_name }}
+          TS:    ${{ steps.stage.outputs.ts }}
+          SHA:   ${{ steps.stage.outputs.short_sha }}
+        run: |
+          tag="latest-render"
+          # Recreate the rolling release each run so its assets stay in sync
+          # with HEAD. `gh release delete` is best-effort — the first run
+          # has nothing to delete.
+          gh release delete "$tag" --cleanup-tag --yes 2>/dev/null || true
+          gh release create "$tag" "$ASSET" \
+            --title "Latest render — ${TS} (${SHA})" \
+            --notes "Auto-published from \`${GITHUB_REF_NAME}\` @ ${GITHUB_SHA}.
+
+          Download: **${NAME}**" \
+            --target "${GITHUB_SHA}"
+          echo "Released: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}"
