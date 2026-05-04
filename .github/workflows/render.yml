@@ -1,0 +1,102 @@
+name: Render & upload promo video
+
+on:
+  push:
+    branches:
+      - claude/arc-promo-video-JcoBb
+      - main
+  workflow_dispatch:
+    inputs:
+      quality:
+        description: "Render quality"
+        type: choice
+        default: high
+        options: [high, medium, low]
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system deps (cairo, pango, ffmpeg, Korean fonts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libpango1.0-dev libcairo2-dev pkg-config ffmpeg fonts-noto-cjk
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Render video
+        env:
+          QUALITY: ${{ inputs.quality || 'high' }}
+        run: |
+          case "$QUALITY" in
+            low)    flags=(-r 540,960   --frame_rate 15) ;;
+            medium) flags=(-r 720,1280  --frame_rate 30) ;;
+            *)      flags=(-r 1080,1920 --frame_rate 60) ;;
+          esac
+          manim "${flags[@]}" scenes/promo.py ARCPromo
+
+      - name: Verify output
+        run: |
+          test -f media/videos/ARCPromo.mp4
+          ffprobe -v error -show_entries stream=width,height,duration \
+            -of default=nw=1 media/videos/ARCPromo.mp4
+
+      - name: Upload as workflow artifact (backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ARCPromo-${{ github.sha }}
+          path: media/videos/ARCPromo.mp4
+          retention-days: 30
+
+      - name: Install rclone
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          rclone version
+
+      - name: Configure rclone from secret
+        env:
+          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
+        run: |
+          if [[ -z "${RCLONE_CONFIG}" ]]; then
+            echo "::error::RCLONE_CONFIG secret is missing — see README §CI for setup."
+            exit 1
+          fi
+          mkdir -p "$HOME/.config/rclone"
+          printf '%s' "$RCLONE_CONFIG" > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+
+      - name: Upload to Google Drive
+        env:
+          DRIVE_FOLDER_ID: ${{ secrets.RCLONE_DRIVE_FOLDER_ID }}
+        run: |
+          if [[ -z "${DRIVE_FOLDER_ID}" ]]; then
+            echo "::error::RCLONE_DRIVE_FOLDER_ID secret is missing — see README §CI for setup."
+            exit 1
+          fi
+          ts=$(date -u +'%Y%m%d-%H%M%S')
+          short_sha=${GITHUB_SHA::7}
+          dest_name="ARCPromo-${ts}-${short_sha}.mp4"
+          # `--drive-root-folder-id` overrides the remote's default root so the
+          # path argument resolves inside the user-specified folder.
+          rclone copyto \
+            "media/videos/ARCPromo.mp4" \
+            "gdrive:${dest_name}" \
+            --drive-root-folder-id "${DRIVE_FOLDER_ID}" \
+            --progress
+          echo "Uploaded to Google Drive as ${dest_name}"

@@ -104,3 +104,82 @@ ffprobe -v error -show_entries stream=width,height,duration -of default=nw=1 \
   media/videos/ARCPromo.mp4
 # Expected: width=1080  height=1920  duration ≈ 19.98s (60fps frame rounding)
 ```
+
+
+## CI: auto-render and upload to Google Drive
+
+The `.github/workflows/render.yml` action renders the video on every push and
+uploads the mp4 to a Google Drive folder you control. It also keeps a copy as
+a 30-day GitHub Actions artifact, so even if the Drive upload fails you can
+still grab the video from the workflow run page.
+
+The workflow needs two GitHub repository secrets:
+
+| Secret | Value |
+|---|---|
+| `RCLONE_CONFIG`           | The full text of your `rclone.conf` (after running `rclone config` locally and authorizing Google Drive). |
+| `RCLONE_DRIVE_FOLDER_ID`  | The Drive folder ID where renders should land (the part after `/folders/` in the folder's URL). |
+
+### One-time local setup
+
+1. **Install rclone** on your laptop:
+   - macOS: `brew install rclone`
+   - Linux: `curl https://rclone.org/install.sh | sudo bash`
+   - Windows: download from https://rclone.org/downloads/
+
+2. **Create a remote named exactly `gdrive`** (the workflow refers to it by
+   that name). Run `rclone config` and follow the prompts:
+   ```
+   n) New remote                       → n
+   name>                                → gdrive
+   Storage>                             → drive            (Google Drive)
+   client_id>                           → (leave blank)
+   client_secret>                       → (leave blank)
+   scope>                               → 1                (full access)
+   service_account_file>                → (leave blank)
+   Edit advanced config?                → n
+   Use auto config?                     → y                (opens browser)
+   ```
+   Authorize the Google account in the browser tab that opens, then back in
+   the terminal answer `n` to "Configure this as a Shared Drive?" and `y` to
+   keep the configuration.
+
+3. **Copy the rclone config text:**
+   ```bash
+   cat ~/.config/rclone/rclone.conf      # macOS / Linux
+   # or, on Windows:
+   type %APPDATA%\rclone\rclone.conf
+   ```
+   The output looks like:
+   ```ini
+   [gdrive]
+   type = drive
+   scope = drive
+   token = {"access_token":"...","refresh_token":"...","expiry":"..."}
+   team_drive =
+   ```
+   Copy the entire block.
+
+4. **Pick or create a destination folder in Google Drive** and grab its ID
+   from the URL: `https://drive.google.com/drive/folders/<THIS_PART>`.
+
+5. **Add the two secrets** at GitHub → repo → Settings → Secrets and variables
+   → Actions → New repository secret:
+   - `RCLONE_CONFIG`           = the text from step 3
+   - `RCLONE_DRIVE_FOLDER_ID`  = the ID from step 4
+
+That's it — the next push runs the workflow and an mp4 named
+`ARCPromo-<timestamp>-<commitsha>.mp4` shows up in your Drive folder.
+
+### Triggering manually
+
+You can also trigger a render without pushing: GitHub → Actions tab →
+"Render & upload promo video" → Run workflow. There's a quality dropdown
+(high / medium / low) for faster previews.
+
+### If the OAuth token expires
+
+Google's refresh tokens are usually long-lived but can be revoked. If a
+workflow run fails at the upload step with a 401/403, just rerun
+`rclone config reconnect gdrive:` locally, copy the new `rclone.conf`, and
+update the `RCLONE_CONFIG` secret.
