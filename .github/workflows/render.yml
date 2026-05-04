@@ -1,0 +1,101 @@
+name: Render & publish promo video
+
+on:
+  push:
+    branches:
+      - claude/arc-promo-video-JcoBb
+      - main
+  workflow_dispatch:
+    inputs:
+      quality:
+        description: "Render quality"
+        type: choice
+        default: high
+        options: [high, medium, low]
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system deps (cairo, pango, ffmpeg, Korean fonts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libpango1.0-dev libcairo2-dev pkg-config ffmpeg fonts-noto-cjk
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Render video
+        env:
+          QUALITY: ${{ inputs.quality || 'high' }}
+        run: |
+          case "$QUALITY" in
+            low)    flags=(-r 540,960   --frame_rate 15) ;;
+            medium) flags=(-r 720,1280  --frame_rate 30) ;;
+            *)      flags=(-r 1080,1920 --frame_rate 60) ;;
+          esac
+          manim "${flags[@]}" scenes/promo.py ARCPromo
+
+      - name: Verify output
+        run: |
+          test -f media/videos/ARCPromo.mp4
+          ffprobe -v error -show_entries stream=width,height,duration \
+            -of default=nw=1 media/videos/ARCPromo.mp4
+
+      - name: Upload as workflow artifact (backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ARCPromo-${{ github.sha }}
+          path: media/videos/ARCPromo.mp4
+          retention-days: 30
+
+      - name: Stage release asset
+        id: stage
+        run: |
+          ts=$(date -u +'%Y%m%d-%H%M%S')
+          short_sha=${GITHUB_SHA::7}
+          asset_name="ARCPromo-${ts}-${short_sha}.mp4"
+          mkdir -p dist
+          cp media/videos/ARCPromo.mp4 "dist/${asset_name}"
+          {
+            echo "asset_name=${asset_name}"
+            echo "asset_path=dist/${asset_name}"
+            echo "ts=${ts}"
+            echo "short_sha=${short_sha}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish to GitHub Release (rolling "latest-render")
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ASSET: ${{ steps.stage.outputs.asset_path }}
+          NAME:  ${{ steps.stage.outputs.asset_name }}
+          TS:    ${{ steps.stage.outputs.ts }}
+          SHA:   ${{ steps.stage.outputs.short_sha }}
+        run: |
+          tag="latest-render"
+          # Recreate the rolling release each run so its assets stay in sync
+          # with HEAD. `gh release delete` is best-effort — the first run
+          # has nothing to delete.
+          gh release delete "$tag" --cleanup-tag --yes 2>/dev/null || true
+          gh release create "$tag" "$ASSET" \
+            --title "Latest render — ${TS} (${SHA})" \
+            --notes "Auto-published from \`${GITHUB_REF_NAME}\` @ ${GITHUB_SHA}.
+
+          Download: **${NAME}**" \
+            --target "${GITHUB_SHA}"
+          echo "Released: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}"
