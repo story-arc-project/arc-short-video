@@ -76,9 +76,12 @@ def play(scene: Scene) -> None:
     if tabs.width > body_w - 0.4:
         tabs.scale((body_w - 0.4) / tabs.width)
     body_top_y = frame.body_top_left()[1]
+    # Anchor by the strip's actual top edge so the row never clips above the
+    # browser body, regardless of font metrics or future copy changes.
+    tab_center_y = body_top_y - tabs.height / 2 - 0.06
     tabs.move_to([
         frame.outer.get_center()[0],
-        body_top_y - 0.3,
+        tab_center_y,
         0,
     ])
 

@@ -49,6 +49,7 @@ class ExperienceCard(VGroup):
         height: float = 0.85,
         title_font_size: float = 21,
         date_font_size: float = 17,
+        badge_font_size: float = 18,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -61,7 +62,7 @@ class ExperienceCard(VGroup):
         right_x = self.surface.get_right()[0] - inset
         cy = self.surface.get_center()[1]
 
-        self.badge = Badge(category, variant="brand", font_size=18)
+        self.badge = Badge(category, variant="brand", font_size=badge_font_size)
         self.badge.move_to([left_x + self.badge.width / 2, cy, 0])
         self.add(self.badge)
 

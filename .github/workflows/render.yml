@@ -25,11 +25,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install system deps (cairo, pango, ffmpeg, Korean fonts)
+      - name: Install system deps (cairo, pango, ffmpeg)
+        # Korean fonts are bundled in fonts/ (Pretendard, SIL OFL) and
+        # registered at runtime by components/fonts.py — no apt install needed.
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libpango1.0-dev libcairo2-dev pkg-config ffmpeg fonts-noto-cjk
+            libpango1.0-dev libcairo2-dev pkg-config ffmpeg
 
       - name: Setup Python
         uses: actions/setup-python@v5

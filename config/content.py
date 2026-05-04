@@ -38,8 +38,23 @@ RECORD_ITEMS = [
 ]
 RECORD_ADD_BUTTON = "+ 새 경험 기록하기"
 
-# ----- Analyze beat: keyword bar chart ---------------------------------------
-ANALYZE_TITLE = "키워드 분석"
+# ----- Analyze beat: individual experience analysis --------------------------
+# The user clicks one experience from the archive; the analyze beat shows the
+# AI breakdown for that single experience (강점 / 배운 점 / 추천 키워드).
+ANALYZE_TITLE         = "경험 분석"
+ANALYZE_EXPERIENCE    = ("인턴십", "AI 헬스케어 스타트업 PM 인턴", "2024.07")
+ANALYZE_STRENGTHS_LABEL  = "강점"
+ANALYZE_LEARNINGS_LABEL  = "배운 점"
+ANALYZE_KEYWORDS_LABEL   = "추천 키워드"
+ANALYZE_STRENGTHS     = ["기획", "협업", "리더십"]
+ANALYZE_LEARNINGS     = [
+    "사용자 인터뷰 12건 수행",
+    "데이터 기반 의사결정",
+]
+ANALYZE_RECO_KEYWORDS = ["PM", "헬스케어", "스타트업"]
+
+# Legacy comprehensive keyword chart — no longer wired into any beat, kept for
+# possible reuse in a future "전체 분석" panel.
 ANALYZE_KEYWORDS = [
     ("기획",          92),
     ("개발",          88),
