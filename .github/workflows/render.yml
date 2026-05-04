@@ -69,17 +69,24 @@ jobs:
           curl -fsSL https://rclone.org/install.sh | sudo bash
           rclone version
 
-      - name: Configure rclone from secret
+      - name: Configure rclone with service account
         env:
-          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
+          SA_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
         run: |
-          if [[ -z "${RCLONE_CONFIG}" ]]; then
-            echo "::error::RCLONE_CONFIG secret is missing — see README §CI for setup."
+          if [[ -z "${SA_JSON}" ]]; then
+            echo "::error::GDRIVE_SERVICE_ACCOUNT_JSON secret is missing — see README §CI for setup."
             exit 1
           fi
           mkdir -p "$HOME/.config/rclone"
-          printf '%s' "$RCLONE_CONFIG" > "$HOME/.config/rclone/rclone.conf"
-          chmod 600 "$HOME/.config/rclone/rclone.conf"
+          sa_path="$HOME/.config/rclone/sa.json"
+          printf '%s' "$SA_JSON" > "$sa_path"
+          chmod 600 "$sa_path"
+          cat > "$HOME/.config/rclone/rclone.conf" <<EOF
+          [gdrive]
+          type = drive
+          scope = drive
+          service_account_file = $sa_path
+          EOF
 
       - name: Upload to Google Drive
         env:
@@ -92,8 +99,9 @@ jobs:
           ts=$(date -u +'%Y%m%d-%H%M%S')
           short_sha=${GITHUB_SHA::7}
           dest_name="ARCPromo-${ts}-${short_sha}.mp4"
-          # `--drive-root-folder-id` overrides the remote's default root so the
-          # path argument resolves inside the user-specified folder.
+          # `--drive-root-folder-id` scopes the upload to a folder the
+          # service account has been granted access to. Without it the SA
+          # would try to write to its own (empty) Drive root.
           rclone copyto \
             "media/videos/ARCPromo.mp4" \
             "gdrive:${dest_name}" \

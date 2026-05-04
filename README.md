@@ -113,60 +113,54 @@ uploads the mp4 to a Google Drive folder you control. It also keeps a copy as
 a 30-day GitHub Actions artifact, so even if the Drive upload fails you can
 still grab the video from the workflow run page.
 
-The workflow needs two GitHub repository secrets:
+The workflow authenticates to Drive with a **service account** — no OAuth
+popup, no browser dance, suitable for headless / remote setup. It needs two
+GitHub repository secrets:
 
 | Secret | Value |
 |---|---|
-| `RCLONE_CONFIG`           | The full text of your `rclone.conf` (after running `rclone config` locally and authorizing Google Drive). |
-| `RCLONE_DRIVE_FOLDER_ID`  | The Drive folder ID where renders should land (the part after `/folders/` in the folder's URL). |
+| `GDRIVE_SERVICE_ACCOUNT_JSON` | The full JSON key file for a Google Cloud service account that has Editor access to the destination Drive folder. |
+| `RCLONE_DRIVE_FOLDER_ID`      | The Drive folder ID where renders should land (the part after `/folders/` in the folder's URL). |
 
-### One-time local setup
+### One-time service account setup (~10 min, web only — no OAuth popup)
 
-1. **Install rclone** on your laptop:
-   - macOS: `brew install rclone`
-   - Linux: `curl https://rclone.org/install.sh | sudo bash`
-   - Windows: download from https://rclone.org/downloads/
+1. **Go to Google Cloud Console** → https://console.cloud.google.com and sign in
+   with the Google account that owns the destination Drive.
 
-2. **Create a remote named exactly `gdrive`** (the workflow refers to it by
-   that name). Run `rclone config` and follow the prompts:
-   ```
-   n) New remote                       → n
-   name>                                → gdrive
-   Storage>                             → drive            (Google Drive)
-   client_id>                           → (leave blank)
-   client_secret>                       → (leave blank)
-   scope>                               → 1                (full access)
-   service_account_file>                → (leave blank)
-   Edit advanced config?                → n
-   Use auto config?                     → y                (opens browser)
-   ```
-   Authorize the Google account in the browser tab that opens, then back in
-   the terminal answer `n` to "Configure this as a Shared Drive?" and `y` to
-   keep the configuration.
+2. **Create or select a project.** Top bar → project dropdown → New project.
+   Any name (e.g. `arc-promo-video`).
 
-3. **Copy the rclone config text:**
-   ```bash
-   cat ~/.config/rclone/rclone.conf      # macOS / Linux
-   # or, on Windows:
-   type %APPDATA%\rclone\rclone.conf
-   ```
-   The output looks like:
-   ```ini
-   [gdrive]
-   type = drive
-   scope = drive
-   token = {"access_token":"...","refresh_token":"...","expiry":"..."}
-   team_drive =
-   ```
-   Copy the entire block.
+3. **Enable the Drive API** for that project.
+   Search bar → "Google Drive API" → Enable.
 
-4. **Pick or create a destination folder in Google Drive** and grab its ID
-   from the URL: `https://drive.google.com/drive/folders/<THIS_PART>`.
+4. **Create the service account.**
+   Sidebar → IAM & Admin → Service Accounts → Create service account.
+   - Name: `arc-promo-uploader` (anything works)
+   - Skip optional steps (no roles needed — Drive permissions come from
+     folder sharing in step 7, not from GCP IAM).
+   - Done.
 
-5. **Add the two secrets** at GitHub → repo → Settings → Secrets and variables
-   → Actions → New repository secret:
-   - `RCLONE_CONFIG`           = the text from step 3
-   - `RCLONE_DRIVE_FOLDER_ID`  = the ID from step 4
+5. **Create a JSON key.** Click the service account → Keys tab → Add key →
+   Create new key → JSON → Create. A `*.json` file downloads automatically.
+   Open it; you'll see fields like `"client_email"` and `"private_key"`.
+
+6. **Note the service account email.** It looks like
+   `arc-promo-uploader@<project-id>.iam.gserviceaccount.com` — visible inside
+   the JSON file (`client_email` field) and on the SA list page.
+
+7. **Share the destination Drive folder with that email.** Open Drive in your
+   browser, create or pick a folder, right-click → Share, paste the SA email,
+   role: **Editor**, send. (Uncheck "Notify people" — the SA isn't a person.)
+
+8. **Grab the folder ID** from the URL while you're there:
+   `https://drive.google.com/drive/folders/<THIS_PART>`.
+
+9. **Add the two GitHub Secrets** at
+   https://github.com/story-arc-project/arc-short-video/settings/secrets/actions
+   → New repository secret:
+   - `GDRIVE_SERVICE_ACCOUNT_JSON` = paste the **entire contents** of the
+     downloaded JSON file (multiline is fine).
+   - `RCLONE_DRIVE_FOLDER_ID`      = the folder ID from step 8.
 
 That's it — the next push runs the workflow and an mp4 named
 `ARCPromo-<timestamp>-<commitsha>.mp4` shows up in your Drive folder.
@@ -177,9 +171,15 @@ You can also trigger a render without pushing: GitHub → Actions tab →
 "Render & upload promo video" → Run workflow. There's a quality dropdown
 (high / medium / low) for faster previews.
 
-### If the OAuth token expires
+### Caveats of the service-account approach
 
-Google's refresh tokens are usually long-lived but can be revoked. If a
-workflow run fails at the upload step with a 401/403, just rerun
-`rclone config reconnect gdrive:` locally, copy the new `rclone.conf`, and
-update the `RCLONE_CONFIG` secret.
+- **Files are owned by the service account, not by you.** They live inside
+  your shared folder and you can view, download, copy, or move them anywhere
+  in your Drive. If you ever delete the service account or revoke its
+  Editor permission, the files become inaccessible — so avoid both unless
+  you've already copied the mp4s elsewhere.
+- **Storage doesn't count against your personal Drive quota** — the SA has
+  its own free 15 GB pool.
+- **No quota-share with Workspace shared drives** unless you put the SA on
+  a Shared Drive instead of a regular folder, which is the cleaner long-term
+  setup if you have a Workspace.
