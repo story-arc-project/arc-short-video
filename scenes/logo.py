@@ -1,4 +1,4 @@
-"""Beat 2 — Logo reveal (2.5–4.5s).
+"""Beat 2 — Logo reveal (2.5–4.0s).
 
 The scattered cards from the hook collapse into the center and the ARC
 wordmark draws on top, with the tagline fading in below.
@@ -43,15 +43,15 @@ def play(scene: Scene) -> None:
     cards = getattr(scene, "_hook_cards", None)
     used = 0.0
     if cards is not None:
-        scene.play(FadeOut(cards, scale=0.4), run_time=0.45)
-        used += 0.45
+        scene.play(FadeOut(cards, scale=0.4), run_time=0.35)
+        used += 0.35
 
-    scene.play(Write(wordmark), run_time=0.85)
-    used += 0.85
-    scene.play(FadeIn(tagline, shift=DOWN * 0.1), run_time=0.4)
-    used += 0.4
-    scene.wait(0.2)
-    used += 0.2
+    scene.play(Write(wordmark), run_time=0.65)
+    used += 0.65
+    scene.play(FadeIn(tagline, shift=DOWN * 0.1), run_time=0.3)
+    used += 0.3
+    scene.wait(0.15)
+    used += 0.15
 
     setattr(scene, "_logo_wordmark", wordmark)
     setattr(scene, "_logo_tagline", tagline)
