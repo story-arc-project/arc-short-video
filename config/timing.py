@@ -7,10 +7,10 @@ import time so a typo can't silently produce a 22-second video.
 
 # (start_seconds, duration_seconds)
 HOOK    = (0.0,  2.5)
-LOGO    = (2.5,  2.0)
-RECORD  = (4.5,  4.5)
-ANALYZE = (9.0,  4.5)
-USE     = (13.5, 4.0)
+LOGO    = (2.5,  1.5)
+RECORD  = (4.0,  4.7)
+ANALYZE = (8.7,  4.5)
+USE     = (13.2, 4.3)
 OUTRO   = (17.5, 2.5)
 
 TOTAL = 20.0
