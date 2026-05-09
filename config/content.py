@@ -37,6 +37,7 @@ RECORD_ITEMS = [
     ("동아리",   "와플스튜디오 21.5기 프론트엔드",  "2023.11"),
 ]
 RECORD_ADD_BUTTON = "+ 새 경험 기록하기"
+RECORD_FOOTER     = "이번 학기 3개 · 누적 12개"
 
 # ----- Analyze beat: individual experience analysis --------------------------
 # The user clicks one experience from the archive; the analyze beat shows the
@@ -69,3 +70,14 @@ ANALYZE_KEYWORDS = [
 EXPORT_TITLE = "내보내기"
 EXPORT_TABS  = ["이력서", "자기소개서", "포트폴리오"]
 EXPORT_AI_LABEL = "AI 작성됨"
+
+# Mock content shown inside each export preview tab.
+RESUME_NAME      = "김아크"
+RESUME_SUBTITLE  = "프로덕트 매니저 지망 · 컴퓨터공학과"
+RESUME_SECTIONS  = ["경력", "프로젝트", "스킬"]
+
+COVER_TITLE      = "성장 경험"
+COVER_HIGHLIGHT  = "사용자 인터뷰로 문제를 재정의했습니다."
+
+PORTFOLIO_TITLE     = "Selected Works"
+PORTFOLIO_CAPTIONS  = ["헬스케어 PM 인턴", "캡스톤 대상", "프론트엔드 동아리", "사용자 리서치"]

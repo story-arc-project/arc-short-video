@@ -91,9 +91,14 @@ class BrowserFrame(VGroup):
             color=theme.GRAY_500,
             font_size=15,
         )
+        max_text_w = url_bar_w - 0.18
+        if url_text.width > max_text_w:
+            url_text.scale(max_text_w / url_text.width)
         url_text.move_to(url_bar.get_center())
         self.add(url_text)
         self.url_text = url_text
+        self._url_bar = url_bar
+        self._url_bar_w = url_bar_w
 
         self._body_top = header.get_bottom()[1]
         self._body_bottom = outer.get_bottom()[1]
@@ -115,3 +120,16 @@ class BrowserFrame(VGroup):
 
     def body_top_left(self) -> list[float]:
         return [self._body_left, self._body_top, 0.0]
+
+    def make_url_text(self, new_url: str) -> Text:
+        new_text = Text(
+            new_url,
+            font=body_font(),
+            color=theme.GRAY_500,
+            font_size=15,
+        )
+        max_text_w = self._url_bar_w - 0.18
+        if new_text.width > max_text_w:
+            new_text.scale(max_text_w / new_text.width)
+        new_text.move_to(self._url_bar.get_center())
+        return new_text

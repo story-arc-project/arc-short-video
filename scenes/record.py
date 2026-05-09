@@ -6,6 +6,7 @@ stack from top to bottom, ending with the dashed "+ 새 경험 기록하기" CTA
 from __future__ import annotations
 
 from manim import (
+    Create,
     DOWN,
     FadeIn,
     FadeOut,
@@ -24,6 +25,7 @@ from manim import (
 from components.badge import Badge
 from components.browser_chrome import BrowserFrame
 from components.card import ExperienceCard
+from components.decor import caption_underline
 from components.fonts import body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
@@ -85,7 +87,8 @@ def play(scene: Scene) -> None:
         0,
     ])
 
-    # Three experience cards.
+    # Three experience cards. Anchor by the stack TOP so the first card never
+    # crashes into the tab strip above, regardless of how tall the tabs are.
     cards = VGroup()
     for category, title, date in content.RECORD_ITEMS:
         cards.add(
@@ -99,15 +102,25 @@ def play(scene: Scene) -> None:
                 date_font_size=14,
             )
         )
-    cards.arrange(DOWN, buff=0.18)
+    cards.arrange(DOWN, buff=0.22)
+    tabs_bottom_y = tabs.get_bottom()[1]
+    stack_top_y = tabs_bottom_y - 0.26
     cards.move_to([
         frame.outer.get_center()[0],
-        body_top_y - 1.6,
+        stack_top_y - cards.height / 2,
         0,
     ])
 
     cta = _dashed_cta(content.RECORD_ADD_BUTTON, width=3.3)
-    cta.next_to(cards, DOWN, buff=0.22)
+    cta.next_to(cards, DOWN, buff=0.32)
+
+    footer = Text(
+        content.RECORD_FOOTER,
+        font=body_font(),
+        color=theme.GRAY_500,
+        font_size=14,
+    )
+    footer.next_to(cta, DOWN, buff=0.28)
 
     caption = Text(
         content.RECORD_LINE,
@@ -118,6 +131,7 @@ def play(scene: Scene) -> None:
     )
     fit_to_width(caption, 4.0)
     caption.move_to([0, -3.55, 0])
+    underline = caption_underline(caption)
 
     used = 0.0
     intro_anims = drop + [FadeIn(frame, shift=UP * 0.2)]
@@ -136,15 +150,23 @@ def play(scene: Scene) -> None:
     )
     used += 1.6
 
-    scene.play(FadeIn(cta, shift=UP * 0.15), run_time=0.4)
+    scene.play(
+        FadeIn(cta, shift=UP * 0.15),
+        FadeIn(footer, shift=UP * 0.1),
+        run_time=0.4,
+    )
     used += 0.4
 
-    scene.play(FadeIn(caption, shift=UP * 0.15), run_time=0.4)
+    scene.play(
+        FadeIn(caption, shift=UP * 0.15),
+        Create(underline),
+        run_time=0.4,
+    )
     used += 0.4
 
     setattr(scene, "_record_frame", frame)
-    setattr(scene, "_record_inside", VGroup(tabs, cards, cta))
-    setattr(scene, "_record_caption", caption)
+    setattr(scene, "_record_inside", VGroup(tabs, cards, cta, footer))
+    setattr(scene, "_record_caption", VGroup(caption, underline))
 
     if duration > used:
         scene.wait(duration - used)
