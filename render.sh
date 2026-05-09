@@ -38,4 +38,4 @@ for arg in "$@"; do
   esac
 done
 
-exec "$MANIM_BIN" "${quality_args[@]}" "${forward[@]}" scenes/promo.py ARCPromo
+exec "$MANIM_BIN" "${quality_args[@]}" ${forward[@]+"${forward[@]}"} scenes/promo.py ARCPromo
