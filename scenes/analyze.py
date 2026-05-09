@@ -7,17 +7,21 @@ Sections reveal staggered so the viewer reads them in order.
 from __future__ import annotations
 
 from manim import (
+    Create,
     DOWN,
     FadeIn,
     FadeOut,
     LaggedStart,
     Scene,
     Text,
+    Transform,
     UP,
+    VGroup,
 )
 
 from components.analysis_panel import AnalysisPanel
 from components.browser_chrome import BrowserFrame
+from components.decor import caption_underline
 from components.fonts import fit_to_width, heading_font
 from config import content, theme, timing
 
@@ -30,21 +34,33 @@ def play(scene: Scene) -> None:
     prev_caption = getattr(scene, "_record_caption", None)
 
     used = 0.0
+    fade_anims = []
     if inside is not None:
-        scene.play(FadeOut(inside, shift=DOWN * 0.15), run_time=0.35)
-        used += 0.35
+        fade_anims.append(FadeOut(inside, shift=DOWN * 0.15))
     if prev_caption is not None:
-        scene.play(FadeOut(prev_caption, shift=DOWN * 0.1), run_time=0.2)
-        used += 0.2
+        fade_anims.append(FadeOut(prev_caption, shift=DOWN * 0.1))
 
     if frame is None:
         # Defensive: render a fresh frame if record beat is skipped.
-        frame = BrowserFrame(width=3.7, height=6.0, url="story-arc.org/archive")
+        frame = BrowserFrame(
+            width=3.7, height=6.0, url="story-arc.org/analysis",
+        )
         frame.move_to([0, 0.25, 0])
+        if fade_anims:
+            scene.play(*fade_anims, run_time=0.35)
+            used += 0.35
         scene.play(FadeIn(frame), run_time=0.4)
         used += 0.4
-    # When the frame already exists from the record beat, leave the URL bar
-    # alone — it reads "story-arc.org" everywhere, which is fine for a promo.
+    else:
+        # Transform the URL into the per-experience deep link to keep the
+        # browser context honest as the analyze view loads.
+        new_url = frame.make_url_text("story-arc.org/analysis")
+        url_anim = Transform(frame.url_text, new_url)
+        if fade_anims:
+            scene.play(*fade_anims, url_anim, run_time=0.35)
+        else:
+            scene.play(url_anim, run_time=0.3)
+        used += 0.35
 
     body_w, _ = frame.body_size()
 
@@ -87,6 +103,7 @@ def play(scene: Scene) -> None:
     )
     fit_to_width(caption, 4.0)
     caption.move_to([0, -3.55, 0])
+    underline = caption_underline(caption)
 
     # Header + title appear together so the viewer immediately sees which
     # experience is being analyzed.
@@ -109,12 +126,16 @@ def play(scene: Scene) -> None:
     )
     used += 1.7
 
-    scene.play(FadeIn(caption, shift=UP * 0.15), run_time=0.4)
+    scene.play(
+        FadeIn(caption, shift=UP * 0.15),
+        Create(underline),
+        run_time=0.4,
+    )
     used += 0.4
 
     setattr(scene, "_analyze_inside", panel)
     setattr(scene, "_analyze_title", title)
-    setattr(scene, "_analyze_caption", caption)
+    setattr(scene, "_analyze_caption", VGroup(caption, underline))
     setattr(scene, "_analyze_frame", frame)
 
     if duration > used:

@@ -8,6 +8,7 @@ from __future__ import annotations
 import random
 
 from manim import (
+    Create,
     DOWN,
     FadeIn,
     FadeOut,
@@ -19,6 +20,7 @@ from manim import (
 )
 
 from components.card import ExperienceCard
+from components.decor import caption_underline
 from components.fonts import fit_to_width, heading_font
 from config import content, theme, timing
 
@@ -30,8 +32,8 @@ def play(scene: Scene) -> None:
 
     cards = VGroup()
     positions = [
-        (-0.95, 2.4), (0.85, 1.65), (-0.95, 0.55),
-        (0.85, -0.55), (-0.95, -1.65), (0.85, -2.7),
+        (-0.95, 2.4), (0.85, 1.7), (-0.95, 0.6),
+        (0.85, -0.5), (-0.95, -1.45), (0.85, -2.45),
     ]
     rotations = [-6, 4, -3, 7, -5, 3]
     for (label, date), pos, rot in zip(content.HOOK_CARDS, positions, rotations):
@@ -47,10 +49,11 @@ def play(scene: Scene) -> None:
         font=heading_font(),
         weight=theme.WEIGHT_BOLD,
         color=theme.GRAY_950,
-        font_size=44,
+        font_size=38,
     )
-    fit_to_width(caption, 4.0)
-    caption.move_to([0, -3.55, 0])
+    fit_to_width(caption, 4.2)
+    caption.move_to([0, -3.15, 0])
+    underline = caption_underline(caption)
 
     scene.play(
         LaggedStart(
@@ -59,13 +62,18 @@ def play(scene: Scene) -> None:
             run_time=1.4,
         )
     )
-    scene.play(FadeIn(caption, shift=UP * 0.15), run_time=0.45)
+    scene.play(
+        FadeIn(caption, shift=UP * 0.15),
+        Create(underline),
+        run_time=0.45,
+    )
     scene.wait(0.25)
 
     # Sweep cards into a tight cluster ready for the logo reveal.
     scene.play(
         cards.animate.scale(0.55).move_to([0, 0.6, 0]).set_opacity(0.65),
         FadeOut(caption, shift=DOWN * 0.1),
+        FadeOut(underline, shift=DOWN * 0.1),
         run_time=0.4,
     )
 
