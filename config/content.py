@@ -6,16 +6,16 @@ and rerun ``bash render.sh`` — the scenes pick everything up automatically.
 
 # ----- Branding --------------------------------------------------------------
 BRAND_NAME = "ARC"
-TAGLINE    = "흩어진 경험을 연결해 당신만의 가능성을 그리다"
+TAGLINE    = "기록한 경험을 AI가 커리어 서사로 바꿔줍니다"
 URL        = "story-arc.org"
 
 # ----- Per-beat captions -----------------------------------------------------
-HOOK_LINE     = "흩어진 경험들"
+HOOK_LINE     = "열심히 살았는데\n쓸 말이 없다면?"
 LOGO_LINE     = TAGLINE
-RECORD_LINE   = "18개 경험 유형을 가이드라인과 함께"
-ANALYZE_LINE  = "AI가 강점·역량·진로를 분석"
-USE_LINE      = "레쥬메·포트폴리오로 즉시 변환"
-OUTRO_LINE    = TAGLINE
+RECORD_LINE   = "인턴·공모전·동아리 경험을 쉽게 기록"
+ANALYZE_LINE  = "내 경험에서 강점과 키워드를 추출"
+USE_LINE      = "이력서·자소서·포트폴리오로 변환"
+OUTRO_LINE    = "지금 내 경험을 기록해보세요"
 
 # ----- Hook beat: floating fragment cards ------------------------------------
 # (category_label, date_label) — six fragments drift across the screen.
@@ -46,12 +46,12 @@ ANALYZE_EXPERIENCE    = ("인턴십", "AI 헬스케어 스타트업 PM 인턴", 
 ANALYZE_STRENGTHS_LABEL  = "강점"
 ANALYZE_LEARNINGS_LABEL  = "배운 점"
 ANALYZE_KEYWORDS_LABEL   = "추천 키워드"
-ANALYZE_STRENGTHS     = ["기획", "협업", "리더십"]
+ANALYZE_STRENGTHS     = ["문제 정의", "협업", "실행력"]
 ANALYZE_LEARNINGS     = [
-    "사용자 인터뷰 12건 수행",
-    "데이터 기반 의사결정",
+    "사용자 인터뷰로 문제를 구체화",
+    "데이터 기반으로 우선순위 결정",
 ]
-ANALYZE_RECO_KEYWORDS = ["PM", "헬스케어", "스타트업"]
+ANALYZE_RECO_KEYWORDS = ["문제해결", "사용자 리서치", "기획 역량"]
 
 # Legacy comprehensive keyword chart — no longer wired into any beat, kept for
 # possible reuse in a future "전체 분석" panel.
@@ -67,5 +67,5 @@ ANALYZE_KEYWORDS = [
 
 # ----- Use beat: export tabs -------------------------------------------------
 EXPORT_TITLE = "내보내기"
-EXPORT_TABS  = ["이력서", "자기소개서", "포트폴리오", "전자명함"]
+EXPORT_TABS  = ["이력서", "자기소개서", "포트폴리오"]
 EXPORT_AI_LABEL = "AI 작성됨"
