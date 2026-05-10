@@ -44,15 +44,15 @@ def play(scene: Scene) -> None:
         card.rotate(rot * 0.0174533)
         cards.add(card)
 
-    caption = Text(
-        content.HOOK_LINE,
-        font=heading_font(),
-        weight=theme.WEIGHT_BOLD,
-        color=theme.GRAY_950,
-        font_size=38,
-    )
+    # Each line as a separate Text so they can be centered individually.
+    caption_lines = [
+        Text(line, font=heading_font(), weight=theme.WEIGHT_BOLD,
+             color=theme.GRAY_950, font_size=38)
+        for line in content.HOOK_LINE.split("\n")
+    ]
+    caption = VGroup(*caption_lines).arrange(DOWN, buff=0.10)
     fit_to_width(caption, 4.2)
-    caption.move_to([0, -3.15, 0])
+    caption.move_to([0, 0, 0])   # horizontal + vertical center
     underline = caption_underline(caption)
 
     scene.play(

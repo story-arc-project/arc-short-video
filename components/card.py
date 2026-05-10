@@ -1,7 +1,7 @@
 """Re-usable surfaces matching arc-frontend's card style."""
 from __future__ import annotations
 
-from manim import LEFT, RIGHT, RoundedRectangle, Text, VGroup
+from manim import DOWN, LEFT, RIGHT, RoundedRectangle, Text, VGroup
 
 from components.badge import Badge
 from components.fonts import body_font, heading_font
@@ -97,3 +97,73 @@ class ExperienceCard(VGroup):
             self.add(self.title_mob)
         else:
             self.title_mob = None
+
+
+class RichExperienceCard(VGroup):
+    """4-row experience card matching the actual arc-frontend ExperienceCard.
+
+    Layout (top to bottom inside a rounded card):
+        Row 1: [category badge]  [완료 badge]
+        Row 2: title (bold)
+        Row 3: summary (gray, 1 line)
+        Row 4: [tag1] [tag2] [tag3]              date
+    """
+
+    def __init__(
+        self,
+        category: str,
+        title: str,
+        summary: str,
+        tags: list[str],
+        date: str,
+        width: float = 3.3,
+        height: float = 1.15,
+        **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        card = Card(width=width, height=height)
+        self.add(card)
+        surface = card.surface
+
+        inset_x = 0.16
+        left_x = surface.get_left()[0] + inset_x
+        right_x = surface.get_right()[0] - inset_x
+        avail_w = right_x - left_x
+        top_y = surface.get_top()[1] - 0.14
+
+        # Row 1: category + status badges
+        cat_badge = Badge(category, variant="brand", font_size=11,
+                          h_padding=0.10, v_padding=0.04)
+        done_badge = Badge("완료", variant="success", font_size=11,
+                           h_padding=0.10, v_padding=0.04)
+        badge_row = VGroup(cat_badge, done_badge).arrange(RIGHT, buff=0.08)
+        badge_row.move_to([left_x + badge_row.width / 2, top_y - badge_row.height / 2, 0])
+
+        # Row 2: title
+        title_mob = Text(title, font=heading_font(), weight=theme.WEIGHT_BOLD,
+                         color=theme.GRAY_950, font_size=15)
+        if title_mob.width > avail_w:
+            title_mob.scale(avail_w / title_mob.width)
+        title_y = badge_row.get_bottom()[1] - 0.08 - title_mob.height / 2
+        title_mob.move_to([left_x + title_mob.width / 2, title_y, 0])
+
+        # Row 3: summary
+        summary_mob = Text(summary, font=body_font(), color=theme.GRAY_500,
+                           font_size=11)
+        if summary_mob.width > avail_w:
+            summary_mob.scale(avail_w / summary_mob.width)
+        summary_y = title_mob.get_bottom()[1] - 0.07 - summary_mob.height / 2
+        summary_mob.move_to([left_x + summary_mob.width / 2, summary_y, 0])
+
+        # Row 4: tags (left) + date (right)
+        tag_chips = VGroup(*[
+            Badge(t, variant="gray", font_size=10, h_padding=0.08, v_padding=0.03)
+            for t in tags[:3]
+        ]).arrange(RIGHT, buff=0.06)
+
+        date_mob = Text(date, font=body_font(), color=theme.GRAY_500, font_size=11)
+        bottom_y = surface.get_bottom()[1] + 0.14 + max(tag_chips.height, date_mob.height) / 2
+        tag_chips.move_to([left_x + tag_chips.width / 2, bottom_y, 0])
+        date_mob.move_to([right_x - date_mob.width / 2, bottom_y, 0])
+
+        self.add(badge_row, title_mob, summary_mob, tag_chips, date_mob)
