@@ -1,16 +1,19 @@
 """Beat 6 — Outro (17.5–20.0s).
 
-Browser frame collapses, ARC wordmark + tagline + URL fade in for the
-final hold.
+Browser frame collapses, ARC wordmark (gradient + arc curve) + tagline + URL
+fade in for the final hold.
 """
 from __future__ import annotations
 
 from manim import (
+    Arc,
     DOWN,
     FadeIn,
     FadeOut,
+    PI,
     Scene,
     Text,
+    VGroup,
     UP,
 )
 
@@ -37,33 +40,43 @@ def play(scene: Scene) -> None:
         font=heading_font(),
         weight=theme.WEIGHT_BOLD,
         color=theme.BRAND,
-        font_size=130,
+        font_size=100,
     )
-    wordmark.move_to([0, 0.9, 0])
+    wordmark.set_color_by_gradient(theme.BRAND_DARK, theme.BRAND)
+
+    arc_line = Arc(
+        radius=wordmark.width * 0.42,
+        start_angle=0,
+        angle=PI,
+        stroke_color=theme.BRAND,
+        stroke_width=5,
+    )
+    arc_line.next_to(wordmark, UP, buff=0.06)
+
+    logo_group = VGroup(arc_line, wordmark)
+    logo_group.move_to([0, 1.2, 0])
 
     tagline = Text(
         content.OUTRO_LINE,
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,
         color=theme.GRAY_700,
-        font_size=28,
+        font_size=22,
     )
     fit_to_width(tagline, 4.0)
-    tagline.move_to([0, -0.6, 0])
+    tagline.next_to(logo_group, DOWN, buff=0.55)
 
     url = Text(
         content.URL,
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,
         color=theme.BRAND_DARK,
-        font_size=34,
+        font_size=26,
     )
-    url.move_to([0, -1.6, 0])
+    url.next_to(tagline, DOWN, buff=0.28)
 
-    # FadeIn (not Write) so the wordmark is visible from frame 1, avoiding
-    # a flicker between the previous beat fading out and Write starting.
     scene.play(
-        FadeIn(wordmark, scale=1.15, run_time=0.7),
+        FadeIn(logo_group, scale=1.12, run_time=0.7),
         FadeIn(tagline, shift=UP * 0.15, run_time=0.55),
     )
     used += 0.7
