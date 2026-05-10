@@ -10,7 +10,7 @@ TAGLINE    = "기록한 경험을 AI가 커리어 서사로 바꿔줍니다"
 URL        = "story-arc.org"
 
 # ----- Per-beat captions -----------------------------------------------------
-HOOK_LINE     = "열심히 살았는데,\n내 경험을 정리하기\n막막하다면?"
+HOOK_LINE     = "열심히 살았는데\n쓸 말이 없다면?"
 LOGO_LINE     = TAGLINE
 RECORD_LINE   = "인턴·공모전·동아리 경험을 쉽게 기록"
 ANALYZE_LINE  = "내 경험에서 강점과 키워드를 추출"
@@ -29,69 +29,55 @@ HOOK_CARDS = [
 ]
 
 # ----- Record beat: archive screen items -------------------------------------
-# (category_badge, title, summary, tags, date) — items appear from top to bottom.
+# (category_badge, title, date) — items appear from top to bottom.
 RECORD_HEADER_TABS = ["전체", "인턴십", "공모전", "동아리", "수업"]
 RECORD_ITEMS = [
-    ("인턴십", "AI 헬스케어 스타트업 PM 인턴",
-     "의료 데이터 기반 서비스 기획 및 로드맵 수립",
-     ["PM", "헬스케어", "기획"], "2024.07"),
-    ("공모전", "2024 캡스톤 디자인 대상",
-     "AI 기반 사용자 인터뷰 분석 플랫폼 제작",
-     ["수상", "기획", "개발"], "2024.05"),
-    ("동아리", "와플스튜디오 21.5기 프론트엔드",
-     "React+TypeScript 웹 서비스 구현 및 협업",
-     ["개발", "협업", "FE"], "2023.11"),
+    ("인턴십",   "AI 헬스케어 스타트업 PM 인턴",   "2024.07"),
+    ("공모전",   "2024 캡스톤 디자인 대상",         "2024.05"),
+    ("동아리",   "와플스튜디오 21.5기 프론트엔드",  "2023.11"),
 ]
 RECORD_ADD_BUTTON = "+ 새 경험 기록하기"
 RECORD_FOOTER     = "이번 학기 3개 · 누적 12개"
 
 # ----- Analyze beat: individual experience analysis --------------------------
-# Based on actual arc-frontend analysis page structure (개별 분석 결과).
-ANALYZE_EXPERIENCE_TITLE = "AI 헬스케어 스타트업 PM 인턴"
-ANALYZE_EXPERIENCE_BADGE = "인턴십"
-ANALYZE_OVERVIEW = (
-    "6개월간 PM으로 서비스 로드맵을 수립하고 기획을 주도한 경험으로,\n"
-    "문제 정의와 실행력이 잘 드러납니다."
-)
-ANALYZE_STRENGTHS_LABEL = "강점"
-ANALYZE_ROLES_LABEL     = "적합한 직무"
-ANALYZE_STRENGTHS = [
-    "문제를 정량적으로 정의하고 개선한 경험",
-    "사용자 리서치 기반 의사결정 역량",
-    "기획–개발 협업 및 일정 조율 능력",
+# The user clicks one experience from the archive; the analyze beat shows the
+# AI breakdown for that single experience (강점 / 배운 점 / 추천 키워드).
+ANALYZE_TITLE         = "경험 분석"
+ANALYZE_EXPERIENCE    = ("인턴십", "AI 헬스케어 스타트업 PM 인턴", "2024.07")
+ANALYZE_STRENGTHS_LABEL  = "강점"
+ANALYZE_LEARNINGS_LABEL  = "배운 점"
+ANALYZE_KEYWORDS_LABEL   = "추천 키워드"
+ANALYZE_STRENGTHS     = ["문제 정의", "협업", "실행력"]
+ANALYZE_LEARNINGS     = [
+    "사용자 인터뷰로 문제를 구체화",
+    "데이터 기반으로 우선순위 결정",
 ]
-ANALYZE_ROLES = ["PM", "서비스 기획자", "UX 리서처"]
+ANALYZE_RECO_KEYWORDS = ["문제해결", "사용자 리서치", "기획 역량"]
+
+# Legacy comprehensive keyword chart — no longer wired into any beat, kept for
+# possible reuse in a future "전체 분석" panel.
+ANALYZE_KEYWORDS = [
+    ("기획",          92),
+    ("개발",          88),
+    ("협업",          85),
+    ("커뮤니케이션",  83),
+    ("리더십",        80),
+    ("분석",          77),
+    ("디자인",        71),
+]
 
 # ----- Use beat: export tabs -------------------------------------------------
 EXPORT_TITLE = "내보내기"
 EXPORT_TABS  = ["이력서", "자기소개서", "포트폴리오"]
 EXPORT_AI_LABEL = "AI 작성됨"
 
-# Resume preview — based on actual app screenshot (레쥬메 에디터 미리보기)
-RESUME_NAME         = "김아크"
-RESUME_NAME_EN      = "Kim Arc"
-RESUME_DOB          = "2002-03-15"
-RESUME_EMAIL        = "arc@story-arc.org"
-RESUME_INTRO        = (
-    "프론트엔드와 PM을 두 축으로 성장해온 학생입니다. "
-    "측정 가능한 성과를 만드는 데 집중합니다."
-)
-RESUME_SCHOOL       = "한양대학교"
-RESUME_SCHOOL_DETAIL = "컴퓨터소프트웨어학부 · 학사 · 2021.03 – 2026.02"
-RESUME_COMPANY      = "AI 헬스케어 스타트업"
-RESUME_COMPANY_DATE = "2024.07 – 2024.12"
-RESUME_COMPANY_ROLE = "PM 인턴 · 제품 기획"
-RESUME_BULLETS      = [
-    "서비스 로드맵 수립 및 기획서 50건+ 작성",
-    "사용자 인터뷰 12건 수행, 기능 우선순위 도출",
-]
-RESUME_PERF         = "주요 기능 전환율 23% 개선"
+# Mock content shown inside each export preview tab.
+RESUME_NAME      = "김아크"
+RESUME_SUBTITLE  = "프로덕트 매니저 지망 · 컴퓨터공학과"
+RESUME_SECTIONS  = ["경력", "프로젝트", "스킬"]
 
-# Cover letter preview (aspirational — not yet in app)
-COVER_SECTION1      = "지원 동기"
-COVER_HIGHLIGHT     = "사용자 인터뷰로 문제를 재정의했습니다."
-COVER_SECTION2      = "성장 경험"
+COVER_TITLE      = "성장 경험"
+COVER_HIGHLIGHT  = "사용자 인터뷰로 문제를 재정의했습니다."
 
-# Portfolio preview
 PORTFOLIO_TITLE     = "Selected Works"
 PORTFOLIO_CAPTIONS  = ["헬스케어 PM 인턴", "캡스톤 대상", "프론트엔드 동아리", "사용자 리서치"]

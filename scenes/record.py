@@ -24,13 +24,13 @@ from manim import (
 
 from components.badge import Badge
 from components.browser_chrome import BrowserFrame
-from components.card import RichExperienceCard
+from components.card import ExperienceCard
 from components.decor import caption_underline
 from components.fonts import body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
 
-def _dashed_cta(text: str, width: float, height: float = 0.52) -> VGroup:
+def _dashed_cta(text: str, width: float, height: float = 0.7) -> VGroup:
     box = RoundedRectangle(
         corner_radius=0.12,
         width=width,
@@ -45,7 +45,7 @@ def _dashed_cta(text: str, width: float, height: float = 0.52) -> VGroup:
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,
         color=theme.BRAND_DARK,
-        font_size=14,
+        font_size=20,
     )
     label.move_to(box.get_center())
     return VGroup(box, label)
@@ -87,21 +87,22 @@ def play(scene: Scene) -> None:
         0,
     ])
 
-    # Three experience cards — rich 4-row layout matching actual app.
+    # Three experience cards. Anchor by the stack TOP so the first card never
+    # crashes into the tab strip above, regardless of how tall the tabs are.
     cards = VGroup()
-    for category, title, summary, tags, date in content.RECORD_ITEMS:
+    for category, title, date in content.RECORD_ITEMS:
         cards.add(
-            RichExperienceCard(
+            ExperienceCard(
                 category=category,
                 title=title,
-                summary=summary,
-                tags=tags,
                 date=date,
                 width=3.3,
-                height=1.15,
+                height=0.78,
+                title_font_size=19,
+                date_font_size=14,
             )
         )
-    cards.arrange(DOWN, buff=0.16)
+    cards.arrange(DOWN, buff=0.22)
     tabs_bottom_y = tabs.get_bottom()[1]
     stack_top_y = tabs_bottom_y - 0.26
     cards.move_to([
@@ -129,7 +130,7 @@ def play(scene: Scene) -> None:
         font_size=30,
     )
     fit_to_width(caption, 4.0)
-    caption.move_to([0, -3.2, 0])
+    caption.move_to([0, -3.55, 0])
     underline = caption_underline(caption)
 
     used = 0.0

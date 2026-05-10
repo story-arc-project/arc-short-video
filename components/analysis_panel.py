@@ -1,37 +1,36 @@
-"""Individual-experience analysis panel — based on actual arc-frontend analysis page.
+"""Individual-experience analysis panel for the analyze beat.
 
 Layout (top to bottom inside the browser body):
 
     ┌──────────────────────────────────────────┐
-    │ AI 헬스케어 스타트업 PM 인턴  [인턴십]     │  ← title + category badge
+    │ [인턴십] AI 헬스케어 스타트업 PM 인턴 2024.07 │  ← header (ExperienceCard)
     ├──────────────────────────────────────────┤
-    │ 한눈에 보기                               │  ← section heading
-    │ ┌──────────────────────────────────────┐ │
-    │ │ 6개월간 PM으로 로드맵을 수립하고...  │ │  ← overview card (gray bg)
-    │ └──────────────────────────────────────┘ │
-    ├──────────────────────────────────────────┤
-    │ 심층 분석                                 │  ← section heading
-    │ 강점                                      │
-    │ • 문제를 정량적으로 정의하고 개선한 경험  │
-    │ • 사용자 리서치 기반 의사결정 역량        │
-    │ • 기획–개발 협업 및 일정 조율 능력       │
-    │ 적합한 직무                               │
-    │ [PM] [서비스 기획자] [UX 리서처]         │
+    │ 강점                                       │
+    │ [기획] [협업] [리더십]                       │
+    │                                            │
+    │ 배운 점                                    │
+    │ • 사용자 인터뷰 12건 수행                    │
+    │ • 데이터 기반 의사결정                       │
+    │                                            │
+    │ 추천 키워드                                  │
+    │ [PM] [헬스케어] [스타트업]                    │
     └──────────────────────────────────────────┘
 
-Each major section is a public attribute (``header``, ``overview``,
-``deep``) so the scene can stagger their reveal with LaggedStart.
+Each section is exposed as a public attribute (``header``, ``strengths``,
+``learnings``, ``keywords``) so the scene can stagger their reveal with
+``LaggedStart``.
 """
 from __future__ import annotations
 
-from manim import DOWN, Dot, LEFT, RIGHT, RoundedRectangle, Text, VGroup
+from manim import DOWN, Dot, LEFT, RIGHT, Text, VGroup
 
 from components.badge import Badge
+from components.card import ExperienceCard
 from components.fonts import body_font, fit_to_width, heading_font
 from config import theme
 
 
-def _section_heading(label: str, font_size: float = 16) -> Text:
+def _section_heading(label: str, font_size: float = 19) -> Text:
     return Text(
         label,
         font=heading_font(),
@@ -41,123 +40,87 @@ def _section_heading(label: str, font_size: float = 16) -> Text:
     )
 
 
-def _subsection_label(label: str, font_size: float = 14) -> Text:
-    return Text(
-        label,
-        font=heading_font(),
-        weight=theme.WEIGHT_SEMIBOLD,
-        color=theme.GRAY_700,
-        font_size=font_size,
-    )
-
-
-def _bullet_line(text: str, font_size: float, max_width: float) -> VGroup:
-    dot = Dot(radius=0.04, color=theme.BRAND)
-    label = Text(text, font=body_font(), color=theme.GRAY_700, font_size=font_size)
-    label_max = max_width - dot.width - 0.14
-    if label.width > label_max:
-        label.scale(label_max / label.width)
-    label.next_to(dot, RIGHT, buff=0.12)
-    return VGroup(dot, label)
-
-
-def _chip_row(labels: list[str], font_size: float, max_width: float) -> VGroup:
-    chips = VGroup(*[Badge(l, variant="gray", font_size=font_size,
-                           h_padding=0.10, v_padding=0.04) for l in labels])
-    chips.arrange(RIGHT, buff=0.10)
+def _chip_row(labels: list[str], variant: str, font_size: float, max_width: float) -> VGroup:
+    chips = VGroup(*[Badge(l, variant=variant, font_size=font_size) for l in labels])
+    chips.arrange(RIGHT, buff=0.12)
     if chips.width > max_width:
         chips.scale(max_width / chips.width)
     return chips
 
 
+def _bullet_line(text: str, font_size: float, max_width: float) -> VGroup:
+    dot = Dot(radius=0.045, color=theme.BRAND)
+    label = Text(
+        text,
+        font=body_font(),
+        color=theme.GRAY_700,
+        font_size=font_size,
+    )
+    label_max = max_width - dot.width - 0.16
+    if label.width > label_max:
+        label.scale(label_max / label.width)
+    label.next_to(dot, RIGHT, buff=0.14)
+    return VGroup(dot, label)
+
+
 class AnalysisPanel(VGroup):
-    """Single-experience AI analysis panel matching the actual analysis result page."""
+    """Single-experience AI analysis panel."""
 
     def __init__(
         self,
-        experience_title: str,
-        experience_badge: str,
-        overview: str,
+        experience: tuple[str, str, str],
         strengths: list[str],
-        roles: list[str],
+        learnings: list[str],
+        keywords: list[str],
         strengths_label: str = "강점",
-        roles_label: str = "적합한 직무",
+        learnings_label: str = "배운 점",
+        keywords_label: str = "추천 키워드",
         width: float = 3.3,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
-        # ── Header: title text + category badge ──────────────────────────────
-        title_mob = Text(
-            experience_title,
-            font=heading_font(),
-            weight=theme.WEIGHT_BOLD,
-            color=theme.GRAY_950,
-            font_size=14,
-        )
-        cat_badge = Badge(experience_badge, variant="brand", font_size=11,
-                          h_padding=0.10, v_padding=0.04)
-        header_row = VGroup(title_mob, cat_badge).arrange(RIGHT, buff=0.12)
-        if header_row.width > width:
-            header_row.scale(width / header_row.width)
-        self.header = header_row
+        category, title, date = experience
 
-        # ── Section 1: 한눈에 보기 (overview card) ───────────────────────────
-        overview_heading = _section_heading("한눈에 보기")
-
-        # Overview text inside a light-gray rounded card
-        overview_text = Text(
-            overview,
-            font=body_font(),
-            color=theme.GRAY_700,
-            font_size=12,
-        )
-        if overview_text.width > width - 0.28:
-            overview_text.scale((width - 0.28) / overview_text.width)
-
-        overview_card = RoundedRectangle(
-            corner_radius=0.10,
+        # 1. Header card — reuse ExperienceCard for visual consistency with
+        #    the archive page the user just came from.
+        self.header = ExperienceCard(
+            category=category,
+            title=title,
+            date=date,
             width=width,
-            height=overview_text.height + 0.26,
-            fill_color=theme.GRAY_100,
-            fill_opacity=1.0,
-            stroke_width=0,
-        )
-        overview_text.move_to(overview_card.get_center())
-
-        self.overview = VGroup(
-            overview_heading,
-            VGroup(overview_card, overview_text),
-        ).arrange(DOWN, buff=0.14, aligned_edge=LEFT)
-
-        # ── Section 2: 심층 분석 (strengths + roles) ─────────────────────────
-        deep_heading = _section_heading("심층 분석")
-
-        strengths_label_mob = _subsection_label(strengths_label)
-        bullets = VGroup(*[
-            _bullet_line(s, font_size=12, max_width=width)
-            for s in strengths
-        ]).arrange(DOWN, buff=0.09, aligned_edge=LEFT)
-        strengths_block = VGroup(strengths_label_mob, bullets).arrange(
-            DOWN, buff=0.10, aligned_edge=LEFT
+            height=0.78,
+            title_font_size=17,
+            date_font_size=14,
         )
 
-        roles_label_mob = _subsection_label(roles_label)
-        roles_chips = _chip_row(roles, font_size=12, max_width=width)
-        roles_block = VGroup(roles_label_mob, roles_chips).arrange(
-            DOWN, buff=0.10, aligned_edge=LEFT
-        )
-
-        self.deep = VGroup(
-            deep_heading,
-            strengths_block,
-            roles_block,
+        # 2. 강점 section: heading + brand chips.
+        self.strengths = VGroup(
+            _section_heading(strengths_label),
+            _chip_row(strengths, variant="brand", font_size=15, max_width=width),
         ).arrange(DOWN, buff=0.16, aligned_edge=LEFT)
 
-        body = VGroup(self.overview, self.deep).arrange(
-            DOWN, buff=0.20, aligned_edge=LEFT
+        # 3. 배운 점 section: heading + bullet list.
+        learnings_lines = VGroup(
+            *[_bullet_line(l, font_size=15, max_width=width) for l in learnings]
+        ).arrange(DOWN, buff=0.10, aligned_edge=LEFT)
+        self.learnings = VGroup(
+            _section_heading(learnings_label),
+            learnings_lines,
+        ).arrange(DOWN, buff=0.14, aligned_edge=LEFT)
+
+        # 4. 추천 키워드 section: heading + gray chips.
+        self.keywords = VGroup(
+            _section_heading(keywords_label),
+            _chip_row(keywords, variant="gray", font_size=15, max_width=width),
+        ).arrange(DOWN, buff=0.16, aligned_edge=LEFT)
+
+        body = VGroup(self.strengths, self.learnings, self.keywords).arrange(
+            DOWN, buff=0.32, aligned_edge=LEFT,
         )
-        stack = VGroup(self.header, body).arrange(DOWN, buff=0.18, aligned_edge=LEFT)
+
+        stack = VGroup(self.header, body).arrange(DOWN, buff=0.30)
+        # Defensive width fit so a longer translation can never overflow.
         fit_to_width(stack, width + 0.05)
         self.add(stack)
         self.stack = stack
