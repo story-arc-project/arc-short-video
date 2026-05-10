@@ -80,13 +80,17 @@ def _installed_families() -> frozenset[str]:
 @functools.lru_cache(maxsize=1)
 def heading_font() -> str:
     """Return the best-available font name for Korean headings."""
-    return _resolve(theme.FONT_HEADING)
+    font = _resolve(theme.FONT_HEADING)
+    print(f"[fonts] heading → {font!r}")
+    return font
 
 
 @functools.lru_cache(maxsize=1)
 def body_font() -> str:
     """Return the best-available font name for Korean body text."""
-    return _resolve(theme.FONT_BODY)
+    font = _resolve(theme.FONT_BODY)
+    print(f"[fonts] body    → {font!r}")
+    return font
 
 
 def fit_to_width(mob, max_width: float):
