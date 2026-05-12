@@ -1,9 +1,9 @@
 """Pill-shaped badge matching arc-frontend's badge component."""
 from __future__ import annotations
 
-from manim import RIGHT, RoundedRectangle, Text, VGroup
+from manim import RIGHT, RoundedRectangle, VGroup
 
-from components.fonts import body_font
+from components.fonts import KText, body_font
 from config import theme
 
 VARIANTS = {
@@ -26,7 +26,7 @@ class Badge(VGroup):
         super().__init__(**kwargs)
         bg_color, fg_color = VARIANTS.get(variant, VARIANTS["brand"])
 
-        text = Text(
+        text = KText(
             label,
             font=body_font(),
             weight=theme.WEIGHT_SEMIBOLD,

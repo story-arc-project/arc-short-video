@@ -26,7 +26,7 @@ from components.badge import Badge
 from components.browser_chrome import BrowserFrame
 from components.card import RichExperienceCard
 from components.decor import caption_underline
-from components.fonts import body_font, fit_to_width, heading_font
+from components.fonts import KText, body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
 
@@ -40,7 +40,7 @@ def _dashed_cta(text: str, width: float, height: float = 0.52) -> VGroup:
         stroke_color=theme.BRAND,
         stroke_width=1.6,
     )
-    label = Text(
+    label = KText(
         text,
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,
@@ -113,7 +113,7 @@ def play(scene: Scene) -> None:
     cta = _dashed_cta(content.RECORD_ADD_BUTTON, width=3.3)
     cta.next_to(cards, DOWN, buff=0.14)
 
-    caption = Text(
+    caption = KText(
         content.RECORD_LINE,
         font=heading_font(),
         weight=theme.WEIGHT_SEMIBOLD,

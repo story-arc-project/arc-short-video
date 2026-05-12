@@ -28,12 +28,12 @@ from manim import DOWN, Dot, LEFT, RIGHT, RoundedRectangle, Text, VGroup
 
 from components.badge import Badge
 from components.bar_chart import KeywordBars
-from components.fonts import body_font, fit_to_width, heading_font
+from components.fonts import KText, body_font, fit_to_width, heading_font
 from config import theme
 
 
 def _section_heading(label: str, font_size: float = 16) -> Text:
-    return Text(
+    return KText(
         label,
         font=heading_font(),
         weight=theme.WEIGHT_BOLD,
@@ -43,7 +43,7 @@ def _section_heading(label: str, font_size: float = 16) -> Text:
 
 
 def _subsection_label(label: str, font_size: float = 14) -> Text:
-    return Text(
+    return KText(
         label,
         font=heading_font(),
         weight=theme.WEIGHT_SEMIBOLD,
@@ -54,7 +54,7 @@ def _subsection_label(label: str, font_size: float = 14) -> Text:
 
 def _bullet_line(text: str, font_size: float, max_width: float) -> VGroup:
     dot = Dot(radius=0.04, color=theme.BRAND)
-    label = Text(text, font=body_font(), color=theme.GRAY_700, font_size=font_size)
+    label = KText(text, font=body_font(), color=theme.GRAY_700, font_size=font_size)
     label_max = max_width - dot.width - 0.14
     if label.width > label_max:
         label.scale(label_max / label.width)
@@ -91,7 +91,7 @@ class AnalysisPanel(VGroup):
         super().__init__(**kwargs)
 
         # ── Header: title text + category badge ──────────────────────────────
-        title_mob = Text(
+        title_mob = KText(
             experience_title,
             font=heading_font(),
             weight=theme.WEIGHT_BOLD,
@@ -109,7 +109,7 @@ class AnalysisPanel(VGroup):
         overview_heading = _section_heading("한눈에 보기")
 
         # Overview text inside a light-gray rounded card
-        overview_text = Text(
+        overview_text = KText(
             overview,
             font=body_font(),
             color=theme.GRAY_700,
