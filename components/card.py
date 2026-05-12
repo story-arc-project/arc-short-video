@@ -1,10 +1,10 @@
 """Re-usable surfaces matching arc-frontend's card style."""
 from __future__ import annotations
 
-from manim import DOWN, LEFT, RIGHT, RoundedRectangle, Text, VGroup
+from manim import DOWN, LEFT, RIGHT, RoundedRectangle, VGroup
 
 from components.badge import Badge
-from components.fonts import body_font, heading_font
+from components.fonts import KText, body_font, heading_font
 from config import theme
 
 
@@ -67,7 +67,7 @@ class ExperienceCard(VGroup):
         self.add(self.badge)
 
         if date:
-            self.date_mob = Text(
+            self.date_mob = KText(
                 date,
                 font=body_font(),
                 color=theme.GRAY_500,
@@ -84,7 +84,7 @@ class ExperienceCard(VGroup):
                 self.date_mob.get_left()[0] - 0.18 if self.date_mob else right_x
             )
             available = max(0.5, title_right - title_left)
-            self.title_mob = Text(
+            self.title_mob = KText(
                 title,
                 font=heading_font(),
                 weight=theme.WEIGHT_SEMIBOLD,
@@ -140,7 +140,7 @@ class RichExperienceCard(VGroup):
         badge_row.move_to([left_x + badge_row.width / 2, top_y - badge_row.height / 2, 0])
 
         # Row 2: title
-        title_mob = Text(title, font=heading_font(), weight=theme.WEIGHT_BOLD,
+        title_mob = KText(title, font=heading_font(), weight=theme.WEIGHT_BOLD,
                          color=theme.GRAY_950, font_size=13)
         if title_mob.width > avail_w:
             title_mob.scale(avail_w / title_mob.width)
@@ -148,7 +148,7 @@ class RichExperienceCard(VGroup):
         title_mob.move_to([left_x + title_mob.width / 2, title_y, 0])
 
         # Row 3: summary
-        summary_mob = Text(summary, font=body_font(), color=theme.GRAY_500,
+        summary_mob = KText(summary, font=body_font(), color=theme.GRAY_500,
                            font_size=11)
         if summary_mob.width > avail_w:
             summary_mob.scale(avail_w / summary_mob.width)
@@ -161,7 +161,7 @@ class RichExperienceCard(VGroup):
             for t in tags[:3]
         ]).arrange(RIGHT, buff=0.06)
 
-        date_mob = Text(date, font=body_font(), color=theme.GRAY_500, font_size=11)
+        date_mob = KText(date, font=body_font(), color=theme.GRAY_500, font_size=11)
         bottom_y = surface.get_bottom()[1] + 0.14 + max(tag_chips.height, date_mob.height) / 2
         tag_chips.move_to([left_x + tag_chips.width / 2, bottom_y, 0])
         date_mob.move_to([right_x - date_mob.width / 2, bottom_y, 0])

@@ -27,14 +27,14 @@ from manim import (
 from components.badge import Badge
 from components.browser_chrome import BrowserFrame
 from components.decor import caption_underline
-from components.fonts import body_font, fit_to_width, heading_font
+from components.fonts import KText, body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
 
 def _make_tab(label: str, active: bool) -> VGroup:
     fg = theme.WHITE if active else theme.GRAY_700
     bg = theme.BRAND if active else theme.GRAY_100
-    text = Text(label, font=body_font(), color=fg, weight=theme.WEIGHT_SEMIBOLD,
+    text = KText(label, font=body_font(), color=fg, weight=theme.WEIGHT_SEMIBOLD,
                 font_size=14)
     pad_h, pad_v = 0.14, 0.07
     pill = RoundedRectangle(
@@ -63,7 +63,7 @@ def _skeleton_line(width: float, height: float = 0.09,
 
 def _section_head(label: str, left_x: float, cursor_y: float,
                   font_size: float = 12) -> tuple[Text, float]:
-    head = Text(label, font=heading_font(), weight=theme.WEIGHT_SEMIBOLD,
+    head = KText(label, font=heading_font(), weight=theme.WEIGHT_SEMIBOLD,
                 color=theme.BRAND_DARK, font_size=font_size)
     head.move_to([left_x + head.width / 2, cursor_y - head.height / 2, 0])
     return head, head.get_bottom()[1] - 0.09
@@ -76,7 +76,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     left_x = card.get_left()[0] + inset_x
 
     # ── Name ─────────────────────────────────────────────────────────────────
-    name = Text(content.RESUME_NAME, font=heading_font(),
+    name = KText(content.RESUME_NAME, font=heading_font(),
                 weight=theme.WEIGHT_BOLD, color=theme.GRAY_950, font_size=20)
     if name.width > avail_w:
         name.scale(avail_w / name.width)
@@ -84,9 +84,9 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     inner.add(name)
 
     # ── Name EN + DOB row ─────────────────────────────────────────────────────
-    name_en = Text(content.RESUME_NAME_EN, font=body_font(),
+    name_en = KText(content.RESUME_NAME_EN, font=body_font(),
                    color=theme.GRAY_500, font_size=10, disable_ligatures=True)
-    dob = Text(f"생년월일 {content.RESUME_DOB}", font=body_font(),
+    dob = KText(f"생년월일 {content.RESUME_DOB}", font=body_font(),
                color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     name_en.move_to([left_x + name_en.width / 2,
                      name.get_bottom()[1] - 0.07 - name_en.height / 2, 0])
@@ -95,7 +95,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     inner.add(name_en, dob)
 
     # ── Email ─────────────────────────────────────────────────────────────────
-    email = Text(content.RESUME_EMAIL, font=body_font(),
+    email = KText(content.RESUME_EMAIL, font=body_font(),
                  color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     if email.width > avail_w:
         email.scale(avail_w / email.width)
@@ -114,7 +114,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     # ── 자기소개 section ──────────────────────────────────────────────────────
     head, cursor_y = _section_head("자기소개", left_x, cursor_y)
     inner.add(head)
-    intro = Text(content.RESUME_INTRO, font=body_font(),
+    intro = KText(content.RESUME_INTRO, font=body_font(),
                  color=theme.GRAY_700, font_size=10)
     if intro.width > avail_w:
         intro.scale(avail_w / intro.width)
@@ -126,9 +126,9 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     head, cursor_y = _section_head("학력", left_x, cursor_y)
     inner.add(head)
 
-    school = Text(content.RESUME_SCHOOL, font=heading_font(),
+    school = KText(content.RESUME_SCHOOL, font=heading_font(),
                   weight=theme.WEIGHT_SEMIBOLD, color=theme.GRAY_950, font_size=11)
-    school_date = Text("2021.03 - 2026.02", font=body_font(),
+    school_date = KText("2021.03 - 2026.02", font=body_font(),
                        color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     school.move_to([left_x + school.width / 2, cursor_y - school.height / 2, 0])
     school_date.move_to([card.get_right()[0] - inset_x - school_date.width / 2,
@@ -136,7 +136,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     inner.add(school, school_date)
     cursor_y = school.get_bottom()[1] - 0.06
 
-    detail = Text("컴퓨터소프트웨어학부 · 학사", font=body_font(),
+    detail = KText("컴퓨터소프트웨어학부 · 학사", font=body_font(),
                   color=theme.GRAY_500, font_size=10)
     if detail.width > avail_w:
         detail.scale(avail_w / detail.width)
@@ -148,9 +148,9 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     head, cursor_y = _section_head("경력", left_x, cursor_y)
     inner.add(head)
 
-    company = Text(content.RESUME_COMPANY, font=heading_font(),
+    company = KText(content.RESUME_COMPANY, font=heading_font(),
                    weight=theme.WEIGHT_SEMIBOLD, color=theme.GRAY_950, font_size=11)
-    comp_date = Text(content.RESUME_COMPANY_DATE, font=body_font(),
+    comp_date = KText(content.RESUME_COMPANY_DATE, font=body_font(),
                      color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     if company.width + comp_date.width + 0.1 > avail_w:
         company.scale((avail_w * 0.6) / company.width)
@@ -160,7 +160,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     inner.add(company, comp_date)
     cursor_y = company.get_bottom()[1] - 0.05
 
-    role = Text(content.RESUME_COMPANY_ROLE, font=body_font(),
+    role = KText(content.RESUME_COMPANY_ROLE, font=body_font(),
                 color=theme.GRAY_500, font_size=10)
     if role.width > avail_w:
         role.scale(avail_w / role.width)
@@ -169,8 +169,8 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     cursor_y = role.get_bottom()[1] - 0.08
 
     for bullet_text in content.RESUME_BULLETS:
-        dot = Text("•", font=body_font(), color=theme.BRAND, font_size=10)
-        btext = Text(bullet_text, font=body_font(), color=theme.GRAY_700, font_size=10)
+        dot = KText("•", font=body_font(), color=theme.BRAND, font_size=10)
+        btext = KText(bullet_text, font=body_font(), color=theme.GRAY_700, font_size=10)
         btext_max = avail_w - dot.width - 0.08
         if btext.width > btext_max:
             btext.scale(btext_max / btext.width)
@@ -180,7 +180,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
         inner.add(dot, btext)
         cursor_y = btext.get_bottom()[1] - 0.07
 
-    perf = Text(content.RESUME_PERF, font=body_font(),
+    perf = KText(content.RESUME_PERF, font=body_font(),
                 weight=theme.WEIGHT_SEMIBOLD, color=theme.BRAND_DARK, font_size=10)
     if perf.width > avail_w:
         perf.scale(avail_w / perf.width)
@@ -209,7 +209,7 @@ def _cover_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     # Section 1: 지원 동기
     head, cursor_y = _section_head(content.COVER_SECTION1, left_x, cursor_y, font_size=13)
     inner.add(head)
-    body1 = Text(content.COVER_CONTENT1, font=body_font(),
+    body1 = KText(content.COVER_CONTENT1, font=body_font(),
                  color=theme.GRAY_700, font_size=11)
     if body1.width > avail_w:
         body1.scale(avail_w / body1.width)
@@ -218,7 +218,7 @@ def _cover_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     cursor_y = body1.get_bottom()[1] - 0.10
 
     # Highlight sentence
-    hl_text = Text(content.COVER_HIGHLIGHT, font=body_font(),
+    hl_text = KText(content.COVER_HIGHLIGHT, font=body_font(),
                    weight=theme.WEIGHT_SEMIBOLD, color=theme.BRAND_DARK, font_size=11)
     if hl_text.width > avail_w:
         hl_text.scale(avail_w / hl_text.width)
@@ -244,7 +244,7 @@ def _cover_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     # Section 2: 성장 경험
     head2, cursor_y = _section_head(content.COVER_SECTION2, left_x, cursor_y, font_size=13)
     inner.add(head2)
-    body2 = Text(content.COVER_CONTENT2, font=body_font(),
+    body2 = KText(content.COVER_CONTENT2, font=body_font(),
                  color=theme.GRAY_700, font_size=11)
     if body2.width > avail_w:
         body2.scale(avail_w / body2.width)
@@ -259,7 +259,7 @@ def _portfolio_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     inner = VGroup()
     left_x = card.get_left()[0] + inset_x
 
-    title = Text(content.PORTFOLIO_TITLE, font=heading_font(),
+    title = KText(content.PORTFOLIO_TITLE, font=heading_font(),
                  weight=theme.WEIGHT_BOLD, color=theme.GRAY_950, font_size=16)
     if title.width > avail_w:
         title.scale(avail_w / title.width)
@@ -304,7 +304,7 @@ def _portfolio_preview(card: RoundedRectangle, inset_x: float, top_y: float,
 
             cap_text = captions[idx]
             if cap_text:
-                cap = Text(cap_text, font=body_font(),
+                cap = KText(cap_text, font=body_font(),
                            color=theme.GRAY_700, font_size=10)
                 if cap.width > tile_w - 0.05:
                     cap.scale((tile_w - 0.05) / cap.width)
@@ -415,7 +415,7 @@ def play(scene: Scene) -> None:
     preview = _mock_preview(content.EXPORT_TABS[0], preview_w, preview_h)
     preview.move_to([frame.outer.get_center()[0], preview_y, 0])
 
-    caption = Text(
+    caption = KText(
         content.USE_LINE,
         font=heading_font(),
         weight=theme.WEIGHT_SEMIBOLD,

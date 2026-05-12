@@ -111,6 +111,15 @@ def fit_to_width(mob, max_width: float):
     return mob
 
 
+from manim import Text as _ManimText  # noqa: E402
+
+
+def KText(*args, **kwargs) -> _ManimText:
+    """Manim Text with disable_ligatures=True to suppress Pango run-boundary spacing."""
+    kwargs.setdefault("disable_ligatures", True)
+    return _ManimText(*args, **kwargs)
+
+
 def _resolve(preferred: str) -> str:
     families = _installed_families()
     for candidate in (preferred, *theme.FONT_FALLBACKS):

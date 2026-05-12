@@ -17,13 +17,12 @@ from __future__ import annotations
 
 from manim import (
     RoundedRectangle,
-    Text,
     VGroup,
     ValueTracker,
     always_redraw,
 )
 
-from components.fonts import body_font
+from components.fonts import KText, body_font
 from config import theme
 
 
@@ -57,7 +56,7 @@ class KeywordBars(VGroup):
             cy = top_y - i * (row_height + row_gap)
             target_fraction = value / max_value
 
-            label = Text(
+            label = KText(
                 keyword,
                 font=body_font(),
                 color=theme.GRAY_950,
@@ -119,7 +118,7 @@ class KeywordBars(VGroup):
                       right_gap: float, font_size: float):
         def builder():
             v = round(tracker.get_value() * value)
-            label = Text(
+            label = KText(
                 f"{v}%",
                 font=body_font(),
                 weight=theme.WEIGHT_SEMIBOLD,

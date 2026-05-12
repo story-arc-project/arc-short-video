@@ -22,7 +22,7 @@ from manim import (
 from components.analysis_panel import AnalysisPanel
 from components.browser_chrome import BrowserFrame
 from components.decor import caption_underline
-from components.fonts import fit_to_width, heading_font
+from components.fonts import KText, fit_to_width, heading_font
 from config import content, theme, timing
 
 
@@ -80,7 +80,7 @@ def play(scene: Scene) -> None:
         0,
     ])
 
-    caption = Text(
+    caption = KText(
         content.ANALYZE_LINE,
         font=heading_font(),
         weight=theme.WEIGHT_SEMIBOLD,

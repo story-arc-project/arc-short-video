@@ -17,7 +17,7 @@ from manim import (
     UP,
 )
 
-from components.fonts import body_font, fit_to_width, heading_font
+from components.fonts import KText, body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
 
@@ -35,7 +35,7 @@ def play(scene: Scene) -> None:
         scene.play(*fades, run_time=0.45)
         used += 0.45
 
-    wordmark = Text(
+    wordmark = KText(
         content.BRAND_NAME,
         font=heading_font(),
         weight=theme.WEIGHT_BOLD,
@@ -56,7 +56,7 @@ def play(scene: Scene) -> None:
     logo_group = VGroup(arc_line, wordmark)
     logo_group.move_to([0, 1.2, 0])
 
-    tagline = Text(
+    tagline = KText(
         content.OUTRO_LINE,
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,
@@ -66,7 +66,7 @@ def play(scene: Scene) -> None:
     fit_to_width(tagline, 4.0)
     tagline.next_to(logo_group, DOWN, buff=0.55)
 
-    url = Text(
+    url = KText(
         content.URL,
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,

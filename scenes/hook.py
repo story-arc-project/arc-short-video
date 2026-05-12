@@ -23,7 +23,7 @@ from manim import (
 
 from components.card import ExperienceCard
 from components.decor import caption_underline
-from components.fonts import fit_to_width, heading_font
+from components.fonts import KText, fit_to_width, heading_font
 from config import content, theme, timing
 
 random.seed(0xA1C)  # stable layout for deterministic renders
@@ -48,7 +48,7 @@ def play(scene: Scene) -> None:
 
     # Each line as a separate Text so they can be centered individually.
     caption_lines = [
-        Text(line, font=heading_font(), weight=theme.WEIGHT_BOLD,
+        KText(line, font=heading_font(), weight=theme.WEIGHT_BOLD,
              color=theme.GRAY_950, font_size=38)
         for line in content.HOOK_LINE.split("\n")
     ]

@@ -1,9 +1,9 @@
 """macOS-style window chrome that frames the product mockup beats."""
 from __future__ import annotations
 
-from manim import Circle, LEFT, RIGHT, Rectangle, RoundedRectangle, Text, VGroup
+from manim import Circle, LEFT, RIGHT, Rectangle, RoundedRectangle, VGroup
 
-from components.fonts import body_font
+from components.fonts import KText, body_font
 from config import theme
 
 
@@ -85,12 +85,11 @@ class BrowserFrame(VGroup):
         )
         url_bar.move_to(header.get_center())
         self.add(url_bar)
-        url_text = Text(
+        url_text = KText(
             url,
             font=body_font(),
             color=theme.GRAY_500,
             font_size=15,
-            disable_ligatures=True,
         )
         max_text_w = url_bar_w - 0.18
         if url_text.width > max_text_w:
@@ -123,12 +122,11 @@ class BrowserFrame(VGroup):
         return [self.outer.get_left()[0], self.header.get_bottom()[1], 0.0]
 
     def make_url_text(self, new_url: str) -> Text:
-        new_text = Text(
+        new_text = KText(
             new_url,
             font=body_font(),
             color=theme.GRAY_500,
             font_size=15,
-            disable_ligatures=True,
         )
         max_text_w = self._url_bar_w - 0.18
         if new_text.width > max_text_w:

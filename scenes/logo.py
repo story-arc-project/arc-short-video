@@ -19,14 +19,14 @@ from manim import (
     Write,
 )
 
-from components.fonts import body_font, fit_to_width, heading_font
+from components.fonts import KText, body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
 
 def play(scene: Scene) -> None:
     duration = timing.duration(timing.LOGO)
 
-    wordmark = Text(
+    wordmark = KText(
         content.BRAND_NAME,
         font=heading_font(),
         weight=theme.WEIGHT_BOLD,
@@ -47,7 +47,7 @@ def play(scene: Scene) -> None:
     logo_group = VGroup(arc_line, wordmark)
     logo_group.move_to([0, 0.5, 0])
 
-    tagline = Text(
+    tagline = KText(
         content.LOGO_LINE,
         font=body_font(),
         weight=theme.WEIGHT_SEMIBOLD,
