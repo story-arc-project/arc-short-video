@@ -63,8 +63,8 @@ def play(scene: Scene) -> None:
     if tagline is not None:
         drop.append(FadeOut(tagline, shift=DOWN * 0.15))
 
-    frame = BrowserFrame(width=3.7, height=6.0, url="story-arc.org/archive")
-    frame.move_to([0, 0.25, 0])
+    frame = BrowserFrame(width=3.7, height=5.8, url="story-arc.org/archive")
+    frame.move_to([0, 0.70, 0])
 
     # Category tab chips inside the frame header area. We size tabs to fit
     # within the frame body width so none clip past the rounded edge.
@@ -101,7 +101,7 @@ def play(scene: Scene) -> None:
                 height=1.15,
             )
         )
-    cards.arrange(DOWN, buff=0.16)
+    cards.arrange(DOWN, buff=0.10)
     tabs_bottom_y = tabs.get_bottom()[1]
     stack_top_y = tabs_bottom_y - 0.26
     cards.move_to([
@@ -111,15 +111,7 @@ def play(scene: Scene) -> None:
     ])
 
     cta = _dashed_cta(content.RECORD_ADD_BUTTON, width=3.3)
-    cta.next_to(cards, DOWN, buff=0.32)
-
-    footer = Text(
-        content.RECORD_FOOTER,
-        font=body_font(),
-        color=theme.GRAY_500,
-        font_size=14,
-    )
-    footer.next_to(cta, DOWN, buff=0.28)
+    cta.next_to(cards, DOWN, buff=0.20)
 
     caption = Text(
         content.RECORD_LINE,
@@ -129,7 +121,7 @@ def play(scene: Scene) -> None:
         font_size=30,
     )
     fit_to_width(caption, 4.0)
-    caption.move_to([0, -3.2, 0])
+    caption.move_to([0, -2.8, 0])
     underline = caption_underline(caption)
 
     used = 0.0
@@ -151,7 +143,6 @@ def play(scene: Scene) -> None:
 
     scene.play(
         FadeIn(cta, shift=UP * 0.15),
-        FadeIn(footer, shift=UP * 0.1),
         run_time=0.4,
     )
     used += 0.4
@@ -164,7 +155,7 @@ def play(scene: Scene) -> None:
     used += 0.4
 
     setattr(scene, "_record_frame", frame)
-    setattr(scene, "_record_inside", VGroup(tabs, cards, cta, footer))
+    setattr(scene, "_record_inside", VGroup(tabs, cards, cta))
     setattr(scene, "_record_caption", VGroup(caption, underline))
 
     if duration > used:

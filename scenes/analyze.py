@@ -42,9 +42,9 @@ def play(scene: Scene) -> None:
 
     if frame is None:
         frame = BrowserFrame(
-            width=3.7, height=6.0, url="story-arc.org/analysis",
+            width=3.7, height=5.8, url="story-arc.org/analysis",
         )
-        frame.move_to([0, 0.25, 0])
+        frame.move_to([0, 0.70, 0])
         if fade_anims:
             scene.play(*fade_anims, run_time=0.35)
             used += 0.35
@@ -86,7 +86,7 @@ def play(scene: Scene) -> None:
         font_size=30,
     )
     fit_to_width(caption, 4.0)
-    caption.move_to([0, -3.2, 0])
+    caption.move_to([0, -2.8, 0])
     underline = caption_underline(caption)
 
     scene.play(

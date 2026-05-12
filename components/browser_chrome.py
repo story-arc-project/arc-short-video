@@ -90,6 +90,7 @@ class BrowserFrame(VGroup):
             font=body_font(),
             color=theme.GRAY_500,
             font_size=15,
+            disable_ligatures=True,
         )
         max_text_w = url_bar_w - 0.18
         if url_text.width > max_text_w:
@@ -127,6 +128,7 @@ class BrowserFrame(VGroup):
             font=body_font(),
             color=theme.GRAY_500,
             font_size=15,
+            disable_ligatures=True,
         )
         max_text_w = self._url_bar_w - 0.18
         if new_text.width > max_text_w:

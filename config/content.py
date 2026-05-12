@@ -77,9 +77,9 @@ RESUME_INTRO        = (
     "측정 가능한 성과를 만드는 데 집중합니다."
 )
 RESUME_SCHOOL       = "한양대학교"
-RESUME_SCHOOL_DETAIL = "컴퓨터소프트웨어학부 · 학사 · 2021.03 – 2026.02"
+RESUME_SCHOOL_DETAIL = "컴퓨터소프트웨어학부 · 학사 · 2021.03 - 2026.02"
 RESUME_COMPANY      = "AI 헬스케어 스타트업"
-RESUME_COMPANY_DATE = "2024.07 – 2024.12"
+RESUME_COMPANY_DATE = "2024.07 - 2024.12"
 RESUME_COMPANY_ROLE = "PM 인턴 · 제품 기획"
 RESUME_BULLETS      = [
     "서비스 로드맵 수립 및 기획서 50건+ 작성",
@@ -89,8 +89,16 @@ RESUME_PERF         = "주요 기능 전환율 23% 개선"
 
 # Cover letter preview (aspirational — not yet in app)
 COVER_SECTION1      = "지원 동기"
+COVER_CONTENT1      = (
+    "다양한 경험을 통해 문제를 정의하고 해결하는 과정에서 "
+    "사용자 중심의 서비스 개발에 깊이 매력을 느꼈습니다."
+)
 COVER_HIGHLIGHT     = "사용자 인터뷰로 문제를 재정의했습니다."
 COVER_SECTION2      = "성장 경험"
+COVER_CONTENT2      = (
+    "PM 인턴십에서 팀을 이끌며 실제 서비스의 전체 기획 과정을 "
+    "경험한 것이 저의 가장 큰 성장 기반이 되었습니다."
+)
 
 # Portfolio preview
 PORTFOLIO_TITLE     = "Selected Works"

@@ -85,9 +85,9 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
 
     # ── Name EN + DOB row ─────────────────────────────────────────────────────
     name_en = Text(content.RESUME_NAME_EN, font=body_font(),
-                   color=theme.GRAY_500, font_size=10)
+                   color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     dob = Text(f"생년월일 {content.RESUME_DOB}", font=body_font(),
-               color=theme.GRAY_500, font_size=10)
+               color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     name_en.move_to([left_x + name_en.width / 2,
                      name.get_bottom()[1] - 0.07 - name_en.height / 2, 0])
     dob.move_to([card.get_right()[0] - inset_x - dob.width / 2,
@@ -96,7 +96,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
 
     # ── Email ─────────────────────────────────────────────────────────────────
     email = Text(content.RESUME_EMAIL, font=body_font(),
-                 color=theme.GRAY_500, font_size=10)
+                 color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     if email.width > avail_w:
         email.scale(avail_w / email.width)
     email.move_to([left_x + email.width / 2,
@@ -114,12 +114,13 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     # ── 자기소개 section ──────────────────────────────────────────────────────
     head, cursor_y = _section_head("자기소개", left_x, cursor_y)
     inner.add(head)
-    for w in [avail_w - 0.05, avail_w - 0.25]:
-        ln = _skeleton_line(w)
-        ln.move_to([left_x + ln.width / 2, cursor_y - ln.height / 2, 0])
-        inner.add(ln)
-        cursor_y = ln.get_bottom()[1] - 0.08
-    cursor_y -= 0.06
+    intro = Text(content.RESUME_INTRO, font=body_font(),
+                 color=theme.GRAY_700, font_size=10)
+    if intro.width > avail_w:
+        intro.scale(avail_w / intro.width)
+    intro.move_to([left_x + intro.width / 2, cursor_y - intro.height / 2, 0])
+    inner.add(intro)
+    cursor_y = intro.get_bottom()[1] - 0.10
 
     # ── 학력 section ──────────────────────────────────────────────────────────
     head, cursor_y = _section_head("학력", left_x, cursor_y)
@@ -127,8 +128,8 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
 
     school = Text(content.RESUME_SCHOOL, font=heading_font(),
                   weight=theme.WEIGHT_SEMIBOLD, color=theme.GRAY_950, font_size=11)
-    school_date = Text("2021.03 – 2026.02", font=body_font(),
-                       color=theme.GRAY_500, font_size=10)
+    school_date = Text("2021.03 - 2026.02", font=body_font(),
+                       color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     school.move_to([left_x + school.width / 2, cursor_y - school.height / 2, 0])
     school_date.move_to([card.get_right()[0] - inset_x - school_date.width / 2,
                          cursor_y - school_date.height / 2, 0])
@@ -150,7 +151,7 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     company = Text(content.RESUME_COMPANY, font=heading_font(),
                    weight=theme.WEIGHT_SEMIBOLD, color=theme.GRAY_950, font_size=11)
     comp_date = Text(content.RESUME_COMPANY_DATE, font=body_font(),
-                     color=theme.GRAY_500, font_size=10)
+                     color=theme.GRAY_500, font_size=10, disable_ligatures=True)
     if company.width + comp_date.width + 0.1 > avail_w:
         company.scale((avail_w * 0.6) / company.width)
     company.move_to([left_x + company.width / 2, cursor_y - company.height / 2, 0])
@@ -192,11 +193,13 @@ def _cover_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     # Section 1: 지원 동기
     head, cursor_y = _section_head(content.COVER_SECTION1, left_x, cursor_y, font_size=13)
     inner.add(head)
-    for w in [avail_w - 0.05, avail_w - 0.18]:
-        ln = _skeleton_line(w)
-        ln.move_to([left_x + ln.width / 2, cursor_y - ln.height / 2, 0])
-        inner.add(ln)
-        cursor_y = ln.get_bottom()[1] - 0.09
+    body1 = Text(content.COVER_CONTENT1, font=body_font(),
+                 color=theme.GRAY_700, font_size=11)
+    if body1.width > avail_w:
+        body1.scale(avail_w / body1.width)
+    body1.move_to([left_x + body1.width / 2, cursor_y - body1.height / 2, 0])
+    inner.add(body1)
+    cursor_y = body1.get_bottom()[1] - 0.10
 
     # Highlight sentence
     hl_text = Text(content.COVER_HIGHLIGHT, font=body_font(),
@@ -225,11 +228,12 @@ def _cover_preview(card: RoundedRectangle, inset_x: float, top_y: float,
     # Section 2: 성장 경험
     head2, cursor_y = _section_head(content.COVER_SECTION2, left_x, cursor_y, font_size=13)
     inner.add(head2)
-    for w in [avail_w - 0.08, avail_w - 0.22]:
-        ln = _skeleton_line(w)
-        ln.move_to([left_x + ln.width / 2, cursor_y - ln.height / 2, 0])
-        inner.add(ln)
-        cursor_y = ln.get_bottom()[1] - 0.09
+    body2 = Text(content.COVER_CONTENT2, font=body_font(),
+                 color=theme.GRAY_700, font_size=11)
+    if body2.width > avail_w:
+        body2.scale(avail_w / body2.width)
+    body2.move_to([left_x + body2.width / 2, cursor_y - body2.height / 2, 0])
+    inner.add(body2)
 
     return inner
 
@@ -355,8 +359,8 @@ def play(scene: Scene) -> None:
         fades.append(FadeOut(prev_caption, shift=DOWN * 0.1))
 
     if frame is None:
-        frame = BrowserFrame(width=3.7, height=6.0, url="story-arc.org/export")
-        frame.move_to([0, 0.25, 0])
+        frame = BrowserFrame(width=3.7, height=5.8, url="story-arc.org/export")
+        frame.move_to([0, 0.70, 0])
         if fades:
             scene.play(*fades, run_time=0.3)
             used += 0.3
@@ -387,7 +391,7 @@ def play(scene: Scene) -> None:
     body_w, body_h = frame.body_size()
     tabs_bottom_y = tabs.get_bottom()[1]
     preview_top_y = tabs_bottom_y - 0.26
-    preview_bottom_y = frame.body_top_left()[1] - body_h + 0.30
+    preview_bottom_y = frame.body_top_left()[1] - body_h + 0.70
     preview_h = max(2.4, preview_top_y - preview_bottom_y)
     preview_w = body_w - 0.36
     preview_y = preview_top_y - preview_h / 2
@@ -403,7 +407,7 @@ def play(scene: Scene) -> None:
         font_size=30,
     )
     fit_to_width(caption, 4.0)
-    caption.move_to([0, -3.2, 0])
+    caption.move_to([0, -2.8, 0])
     underline = caption_underline(caption)
 
     scene.play(
