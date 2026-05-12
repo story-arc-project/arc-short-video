@@ -13,10 +13,12 @@ from manim import (
     FadeIn,
     FadeOut,
     LaggedStart,
+    Rectangle,
     Scene,
     Text,
     UP,
     VGroup,
+    config,
 )
 
 from components.card import ExperienceCard
@@ -55,6 +57,18 @@ def play(scene: Scene) -> None:
     caption.move_to([0, 0, 0])   # horizontal + vertical center
     underline = caption_underline(caption)
 
+    # Semi-transparent overlay to blur the cards behind the caption text.
+    blur_overlay = Rectangle(
+        width=config.frame_width + 1,
+        height=config.frame_height + 1,
+        fill_color=theme.WHITE,
+        fill_opacity=0.45,
+        stroke_width=0,
+    )
+    blur_overlay.set_z_index(1)
+    caption.set_z_index(2)
+    underline.set_z_index(2)
+
     scene.play(
         LaggedStart(
             *[FadeIn(c, shift=UP * 0.18) for c in cards],
@@ -63,25 +77,23 @@ def play(scene: Scene) -> None:
         )
     )
     scene.play(
+        FadeIn(blur_overlay),
         FadeIn(caption, shift=UP * 0.15),
         Create(underline),
         run_time=0.45,
     )
-    scene.wait(0.25)
+    caption_hold = max(0.25, duration - (1.4 + 0.45 + 0.4))
+    scene.wait(caption_hold)
 
     # Sweep cards into a tight cluster ready for the logo reveal.
     scene.play(
         cards.animate.scale(0.55).move_to([0, 0.6, 0]).set_opacity(0.65),
         FadeOut(caption, shift=DOWN * 0.1),
         FadeOut(underline, shift=DOWN * 0.1),
+        FadeOut(blur_overlay),
         run_time=0.4,
     )
 
     # Hand `cards` off to the next beat via a scene attribute so the logo
     # reveal can dissolve them inline. (Cheaper than re-creating them.)
     setattr(scene, "_hook_cards", cards)
-
-    # Pad to the exact beat budget.
-    used = 1.4 + 0.45 + 0.25 + 0.4
-    if duration > used:
-        scene.wait(duration - used)

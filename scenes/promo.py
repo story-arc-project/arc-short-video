@@ -20,17 +20,17 @@ from manim import PI, Rectangle, Scene, VGroup, config
 from config import theme
 from scenes import analyze, hook, logo, outro, record, use
 
-config.background_color = theme.WHITE
+config.background_color = theme.BRAND_LIGHT
 
 
 def _backdrop() -> VGroup:
-    """Diagonal warm gradient — EOD slide style."""
+    """Diagonal orange gradient — deep brand orange to soft cream."""
     rect = Rectangle(
         width=config.frame_width * 1.7,
         height=config.frame_height * 1.7,
         stroke_width=0,
     )
-    rect.set_color_by_gradient(theme.BRAND_LIGHT, theme.WHITE)
+    rect.set_color_by_gradient(theme.BRAND_DARK, theme.BRAND, theme.BRAND_LIGHT)
     rect.rotate(PI / 4)
     rect.set_z_index(-10)
     return rect

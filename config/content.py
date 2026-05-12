@@ -61,6 +61,12 @@ ANALYZE_STRENGTHS = [
     "기획–개발 협업 및 일정 조율 능력",
 ]
 ANALYZE_ROLES = ["PM", "서비스 기획자", "UX 리서처"]
+ANALYZE_KEYWORDS_LABEL = "키워드"
+ANALYZE_KEYWORDS = [
+    ("문제 정의",    92),
+    ("의사결정",     85),
+    ("기획 리더십",  74),
+]
 
 # ----- Use beat: export tabs -------------------------------------------------
 EXPORT_TITLE = "내보내기"
@@ -77,9 +83,9 @@ RESUME_INTRO        = (
     "측정 가능한 성과를 만드는 데 집중합니다."
 )
 RESUME_SCHOOL       = "한양대학교"
-RESUME_SCHOOL_DETAIL = "컴퓨터소프트웨어학부 · 학사 · 2021.03 – 2026.02"
+RESUME_SCHOOL_DETAIL = "컴퓨터소프트웨어학부 · 학사 · 2021.03 - 2026.02"
 RESUME_COMPANY      = "AI 헬스케어 스타트업"
-RESUME_COMPANY_DATE = "2024.07 – 2024.12"
+RESUME_COMPANY_DATE = "2024.07 - 2024.12"
 RESUME_COMPANY_ROLE = "PM 인턴 · 제품 기획"
 RESUME_BULLETS      = [
     "서비스 로드맵 수립 및 기획서 50건+ 작성",
@@ -89,8 +95,20 @@ RESUME_PERF         = "주요 기능 전환율 23% 개선"
 
 # Cover letter preview (aspirational — not yet in app)
 COVER_SECTION1      = "지원 동기"
+COVER_CONTENT1      = (
+    "다양한 경험을 통해 문제를 정의하고 해결하는 과정에서\n"
+    "사용자 중심의 서비스 개발에 깊이 매력을 느꼈습니다.\n"
+    "특히 데이터 기반으로 문제를 정의하고 해결책을\n"
+    "도출하는 PM의 역할에 큰 보람을 느꼈습니다."
+)
 COVER_HIGHLIGHT     = "사용자 인터뷰로 문제를 재정의했습니다."
 COVER_SECTION2      = "성장 경험"
+COVER_CONTENT2      = (
+    "PM 인턴십에서 팀을 이끌며 실제 서비스의 전체 기획\n"
+    "과정을 경험한 것이 저의 가장 큰 성장 기반입니다.\n"
+    "사용자 인터뷰 12건을 직접 수행하며 문제를 정의하고\n"
+    "우선순위를 결정하는 역량을 키울 수 있었습니다."
+)
 
 # Portfolio preview
 PORTFOLIO_TITLE     = "Selected Works"

@@ -117,7 +117,7 @@ class RichExperienceCard(VGroup):
         tags: list[str],
         date: str,
         width: float = 3.3,
-        height: float = 1.15,
+        height: float = 1.30,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -141,10 +141,10 @@ class RichExperienceCard(VGroup):
 
         # Row 2: title
         title_mob = Text(title, font=heading_font(), weight=theme.WEIGHT_BOLD,
-                         color=theme.GRAY_950, font_size=15)
+                         color=theme.GRAY_950, font_size=13)
         if title_mob.width > avail_w:
             title_mob.scale(avail_w / title_mob.width)
-        title_y = badge_row.get_bottom()[1] - 0.08 - title_mob.height / 2
+        title_y = badge_row.get_bottom()[1] - 0.11 - title_mob.height / 2
         title_mob.move_to([left_x + title_mob.width / 2, title_y, 0])
 
         # Row 3: summary
@@ -152,7 +152,7 @@ class RichExperienceCard(VGroup):
                            font_size=11)
         if summary_mob.width > avail_w:
             summary_mob.scale(avail_w / summary_mob.width)
-        summary_y = title_mob.get_bottom()[1] - 0.07 - summary_mob.height / 2
+        summary_y = title_mob.get_bottom()[1] - 0.09 - summary_mob.height / 2
         summary_mob.move_to([left_x + summary_mob.width / 2, summary_y, 0])
 
         # Row 4: tags (left) + date (right)

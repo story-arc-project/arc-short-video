@@ -50,9 +50,8 @@ class KeywordBars(VGroup):
         total_h = n * row_height + (n - 1) * row_gap
         top_y = total_h / 2 - row_height / 2
 
-        x_label   = -width / 2 + 0.05 + label_width / 2 - 0.18
-        x_track   = -width / 2 + label_width + bar_track_width / 2 - 0.05
-        x_percent =  width / 2 - percent_width / 2
+        x_label = -width / 2 + 0.05 + label_width / 2 - 0.18
+        x_track = -width / 2 + label_width + bar_track_width / 2 - 0.05
 
         for i, (keyword, value) in enumerate(items):
             cy = top_y - i * (row_height + row_gap)
@@ -84,29 +83,24 @@ class KeywordBars(VGroup):
             self.add(track)
             self.add(self._make_fill(track, target_fraction, self.progress))
 
-            self.add(self._make_percent(value, self.progress, x_percent, cy, font_size))
+            self.add(self._make_percent(value, self.progress, track, 0.08, font_size))
 
     @staticmethod
     def _make_fill(track: RoundedRectangle, target_fraction: float, tracker: ValueTracker):
-        track_left_x = track.get_left()[0]
-        track_y = track.get_center()[1]
-        track_h = track.height
+        track_h = track.height   # invariant under translation — safe to bake
         track_w = track.width
 
         def builder():
+            track_left_x = track.get_left()[0]   # live: follows VGroup.move_to()
+            track_y = track.get_center()[1]       # live
             f = tracker.get_value() * target_fraction
             if f < 0.005:
-                # Below visual threshold: emit an invisible stub so we never
-                # render the "bowtie" pinch artefact a tiny RoundedRectangle
-                # produces when its width drops below 2× corner_radius.
                 stub = RoundedRectangle(
                     corner_radius=0, width=0.001, height=0.001,
                     fill_opacity=0, stroke_width=0,
                 )
                 stub.move_to([track_left_x, track_y, 0])
                 return stub
-            # Always at least one capsule-diameter wide so the rounded ends
-            # render correctly.
             w = max(track_h, track_w * f)
             bar = RoundedRectangle(
                 corner_radius=track_h / 2,
@@ -121,7 +115,8 @@ class KeywordBars(VGroup):
         return always_redraw(builder)
 
     @staticmethod
-    def _make_percent(value: int, tracker: ValueTracker, anchor_x: float, anchor_y: float, font_size: float):
+    def _make_percent(value: int, tracker: ValueTracker, track: RoundedRectangle,
+                      right_gap: float, font_size: float):
         def builder():
             v = round(tracker.get_value() * value)
             label = Text(
@@ -131,6 +126,8 @@ class KeywordBars(VGroup):
                 color=theme.GRAY_700,
                 font_size=font_size - 1,
             )
-            label.move_to([anchor_x, anchor_y, 0])
+            x = track.get_right()[0] + right_gap + label.width / 2   # live
+            y = track.get_center()[1]                                  # live
+            label.move_to([x, y, 0])
             return label
         return always_redraw(builder)
