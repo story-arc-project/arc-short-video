@@ -113,11 +113,23 @@ def fit_to_width(mob, max_width: float):
 
 from manim import Text as _ManimText  # noqa: E402
 
+# Render Korean text at this size then scale down.  At small point sizes Pango
+# rounds each glyph's advance width to the nearest screen pixel, producing
+# visible per-character gaps.  Rendering at a large size avoids that rounding.
+_KTEXT_LARGE_FS = 60
+
 
 def KText(*args, **kwargs) -> _ManimText:
-    """Manim Text with disable_ligatures=True to suppress Pango run-boundary spacing."""
+    """Render at large font_size then scale down to avoid Pango small-size hinting."""
+    orig_fs = kwargs.pop("font_size", 48)
     kwargs.setdefault("disable_ligatures", True)
-    return _ManimText(*args, **kwargs)
+    if orig_fs >= _KTEXT_LARGE_FS:
+        kwargs["font_size"] = orig_fs
+        return _ManimText(*args, **kwargs)
+    kwargs["font_size"] = _KTEXT_LARGE_FS
+    mob = _ManimText(*args, **kwargs)
+    mob.scale(orig_fs / _KTEXT_LARGE_FS)
+    return mob
 
 
 def _resolve(preferred: str) -> str:
