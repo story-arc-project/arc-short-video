@@ -27,6 +27,7 @@ from __future__ import annotations
 from manim import DOWN, Dot, LEFT, RIGHT, RoundedRectangle, Text, VGroup
 
 from components.badge import Badge
+from components.bar_chart import KeywordBars
 from components.fonts import body_font, fit_to_width, heading_font
 from config import theme
 
@@ -80,8 +81,10 @@ class AnalysisPanel(VGroup):
         overview: str,
         strengths: list[str],
         roles: list[str],
+        keywords: list[tuple[str, int]] | None = None,
         strengths_label: str = "강점",
         roles_label: str = "적합한 직무",
+        keywords_label: str = "키워드",
         width: float = 3.3,
         **kwargs,
     ) -> None:
@@ -154,9 +157,24 @@ class AnalysisPanel(VGroup):
             roles_block,
         ).arrange(DOWN, buff=0.16, aligned_edge=LEFT)
 
-        body = VGroup(self.overview, self.deep).arrange(
-            DOWN, buff=0.20, aligned_edge=LEFT
-        )
+        if keywords:
+            kw_heading = _section_heading(keywords_label)
+            kw_bars = KeywordBars(
+                keywords, width=width, row_height=0.26, row_gap=0.12, font_size=12
+            )
+            self.keywords = VGroup(kw_heading, kw_bars).arrange(
+                DOWN, buff=0.14, aligned_edge=LEFT
+            )
+            self.keyword_bars = kw_bars
+            body = VGroup(self.overview, self.deep, self.keywords).arrange(
+                DOWN, buff=0.20, aligned_edge=LEFT
+            )
+        else:
+            self.keywords = None
+            self.keyword_bars = None
+            body = VGroup(self.overview, self.deep).arrange(
+                DOWN, buff=0.20, aligned_edge=LEFT
+            )
         stack = VGroup(self.header, body).arrange(DOWN, buff=0.18, aligned_edge=LEFT)
         fit_to_width(stack, width + 0.05)
         self.add(stack)

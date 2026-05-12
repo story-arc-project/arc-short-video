@@ -107,11 +107,11 @@ class BrowserFrame(VGroup):
         self._body_right = outer.get_right()[0]
 
     def body_center(self) -> list[float]:
-        return [
-            (self._body_left + self._body_right) / 2,
-            (self._body_top + self._body_bottom) / 2,
-            0.0,
-        ]
+        top = self.header.get_bottom()[1]
+        bottom = self.outer.get_bottom()[1]
+        left = self.outer.get_left()[0]
+        right = self.outer.get_right()[0]
+        return [(left + right) / 2, (top + bottom) / 2, 0.0]
 
     def body_size(self) -> tuple[float, float]:
         return (
@@ -120,7 +120,7 @@ class BrowserFrame(VGroup):
         )
 
     def body_top_left(self) -> list[float]:
-        return [self._body_left, self._body_top, 0.0]
+        return [self.outer.get_left()[0], self.header.get_bottom()[1], 0.0]
 
     def make_url_text(self, new_url: str) -> Text:
         new_text = Text(

@@ -82,7 +82,8 @@ def play(scene: Scene) -> None:
         Create(underline),
         run_time=0.45,
     )
-    scene.wait(0.25)
+    caption_hold = max(0.25, duration - (1.4 + 0.45 + 0.4))
+    scene.wait(caption_hold)
 
     # Sweep cards into a tight cluster ready for the logo reveal.
     scene.play(
@@ -96,8 +97,3 @@ def play(scene: Scene) -> None:
     # Hand `cards` off to the next beat via a scene attribute so the logo
     # reveal can dissolve them inline. (Cheaper than re-creating them.)
     setattr(scene, "_hook_cards", cards)
-
-    # Pad to the exact beat budget.
-    used = 1.4 + 0.45 + 0.25 + 0.4
-    if duration > used:
-        scene.wait(duration - used)

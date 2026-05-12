@@ -117,7 +117,7 @@ class RichExperienceCard(VGroup):
         tags: list[str],
         date: str,
         width: float = 3.3,
-        height: float = 1.15,
+        height: float = 1.30,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)

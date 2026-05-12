@@ -42,7 +42,7 @@ def play(scene: Scene) -> None:
 
     if frame is None:
         frame = BrowserFrame(
-            width=3.7, height=5.8, url="story-arc.org/analysis",
+            width=3.7, height=6.0, url="story-arc.org/analysis",
         )
         frame.move_to([0, 0.70, 0])
         if fade_anims:
@@ -69,6 +69,8 @@ def play(scene: Scene) -> None:
         roles=content.ANALYZE_ROLES,
         strengths_label=content.ANALYZE_STRENGTHS_LABEL,
         roles_label=content.ANALYZE_ROLES_LABEL,
+        keywords=content.ANALYZE_KEYWORDS,
+        keywords_label=content.ANALYZE_KEYWORDS_LABEL,
         width=body_w - 0.32,
     )
     panel_top_y = frame.body_top_left()[1] - 0.26
@@ -91,19 +93,25 @@ def play(scene: Scene) -> None:
 
     scene.play(
         FadeIn(panel.header, shift=UP * 0.1),
-        run_time=0.40,
+        run_time=0.35,
     )
-    used += 0.40
+    used += 0.35
 
     scene.play(
         LaggedStart(
             FadeIn(panel.overview, shift=UP * 0.12),
             FadeIn(panel.deep,     shift=UP * 0.12),
             lag_ratio=0.40,
-            run_time=1.8,
+            run_time=1.4,
         )
     )
-    used += 1.8
+    used += 1.4
+
+    if panel.keywords is not None:
+        scene.play(FadeIn(panel.keywords, shift=UP * 0.12), run_time=0.35)
+        used += 0.35
+        scene.play(panel.keyword_bars.progress.animate.set_value(1), run_time=0.55)
+        used += 0.55
 
     scene.play(
         FadeIn(caption, shift=UP * 0.15),

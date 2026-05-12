@@ -63,7 +63,7 @@ def play(scene: Scene) -> None:
     if tagline is not None:
         drop.append(FadeOut(tagline, shift=DOWN * 0.15))
 
-    frame = BrowserFrame(width=3.7, height=5.8, url="story-arc.org/archive")
+    frame = BrowserFrame(width=3.7, height=6.0, url="story-arc.org/archive")
     frame.move_to([0, 0.70, 0])
 
     # Category tab chips inside the frame header area. We size tabs to fit
@@ -98,10 +98,10 @@ def play(scene: Scene) -> None:
                 tags=tags,
                 date=date,
                 width=3.3,
-                height=1.15,
+                height=1.30,
             )
         )
-    cards.arrange(DOWN, buff=0.10)
+    cards.arrange(DOWN, buff=0.08)
     tabs_bottom_y = tabs.get_bottom()[1]
     stack_top_y = tabs_bottom_y - 0.26
     cards.move_to([
@@ -111,7 +111,7 @@ def play(scene: Scene) -> None:
     ])
 
     cta = _dashed_cta(content.RECORD_ADD_BUTTON, width=3.3)
-    cta.next_to(cards, DOWN, buff=0.20)
+    cta.next_to(cards, DOWN, buff=0.14)
 
     caption = Text(
         content.RECORD_LINE,

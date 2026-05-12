@@ -180,6 +180,22 @@ def _resume_preview(card: RoundedRectangle, inset_x: float, top_y: float,
         inner.add(dot, btext)
         cursor_y = btext.get_bottom()[1] - 0.07
 
+    perf = Text(content.RESUME_PERF, font=body_font(),
+                weight=theme.WEIGHT_SEMIBOLD, color=theme.BRAND_DARK, font_size=10)
+    if perf.width > avail_w:
+        perf.scale(avail_w / perf.width)
+    perf_bg = RoundedRectangle(
+        corner_radius=0.05,
+        width=perf.width + 0.14,
+        height=perf.height + 0.08,
+        fill_color=theme.BRAND_LIGHT,
+        fill_opacity=1.0,
+        stroke_width=0,
+    )
+    perf_bg.move_to([left_x + perf_bg.width / 2, cursor_y - perf_bg.height / 2, 0])
+    perf.move_to(perf_bg.get_center())
+    inner.add(perf_bg, perf)
+
     return inner
 
 
@@ -359,7 +375,7 @@ def play(scene: Scene) -> None:
         fades.append(FadeOut(prev_caption, shift=DOWN * 0.1))
 
     if frame is None:
-        frame = BrowserFrame(width=3.7, height=5.8, url="story-arc.org/export")
+        frame = BrowserFrame(width=3.7, height=6.0, url="story-arc.org/export")
         frame.move_to([0, 0.70, 0])
         if fades:
             scene.play(*fades, run_time=0.3)
