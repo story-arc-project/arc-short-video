@@ -25,12 +25,13 @@ ERROR          = "#f04452"
 INFO           = "#3182f6"
 
 # ----- Typography ------------------------------------------------------------
-# Pretendard is the primary Korean font, bundled under ``fonts/`` (SIL OFL).
-# It renders consistently across macOS, Linux, and GitHub Actions CI.
-# Resolution order: bundled Pretendard → Noto CJK.
-FONT_HEADING   = "Pretendard"
-FONT_BODY      = "Pretendard"
-FONT_FALLBACKS = ("Noto Sans CJK KR", "Noto Sans KR")
+# On macOS, Apple SD Gothic Neo is preferred (system font, no install needed).
+# On Linux / CI, Pretendard (bundled under fonts/, SIL OFL) is used instead.
+# Resolution order: system font → bundled Pretendard → Noto CJK.
+import platform as _platform
+FONT_HEADING   = "Apple SD Gothic Neo" if _platform.system() == "Darwin" else "Pretendard"
+FONT_BODY      = "Apple SD Gothic Neo" if _platform.system() == "Darwin" else "Pretendard"
+FONT_FALLBACKS = ("Pretendard", "Noto Sans CJK KR", "Noto Sans KR")
 
 WEIGHT_REGULAR  = "NORMAL"
 WEIGHT_SEMIBOLD = "SEMIBOLD"

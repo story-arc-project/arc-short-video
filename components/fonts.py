@@ -60,20 +60,31 @@ _register_bundled_fonts()
 
 @functools.lru_cache(maxsize=1)
 def _installed_families() -> frozenset[str]:
-    if shutil.which("fc-list") is None:
-        return frozenset()
-    try:
-        out = subprocess.check_output(
-            ["fc-list", ":lang=ko", "family"], text=True, timeout=5,
-        )
-    except (subprocess.SubprocessError, OSError):
-        return frozenset()
     families: set[str] = set()
-    for line in out.splitlines():
-        for name in line.split(","):
-            name = name.strip()
-            if name:
-                families.add(name)
+
+    # fc-list gives Korean-filtered results on Linux; may also exist on macOS
+    # when fontconfig is installed via Homebrew.
+    if shutil.which("fc-list") is not None:
+        try:
+            out = subprocess.check_output(
+                ["fc-list", ":lang=ko", "family"], text=True, timeout=5,
+            )
+            for line in out.splitlines():
+                for name in line.split(","):
+                    name = name.strip()
+                    if name:
+                        families.add(name)
+        except (subprocess.SubprocessError, OSError):
+            pass
+
+    # manimpango.list_fonts() asks Pango directly — works on macOS without
+    # fc-list and picks up Apple SD Gothic Neo from the system font registry.
+    try:
+        for fam in manimpango.list_fonts():
+            families.add(fam)
+    except Exception:
+        pass
+
     return frozenset(families)
 
 
@@ -103,16 +114,17 @@ def fit_to_width(mob, max_width: float):
 def _resolve(preferred: str) -> str:
     families = _installed_families()
     for candidate in (preferred, *theme.FONT_FALLBACKS):
-        # Bundled fonts are guaranteed available even when fc-list lags
-        # behind the runtime registration.
-        if candidate in _REGISTERED_FAMILIES:
-            return candidate
+        # System fonts first — lets a host-native font (e.g. Apple SD Gothic
+        # Neo on macOS) win over the bundled Pretendard when available.
         if candidate in families:
             return candidate
-        # fc-list reports both "Noto Sans CJK KR" and language-tagged variants;
+        # Pango may report both "Noto Sans CJK KR" and language-tagged variants;
         # accept any family that case-insensitively contains the candidate.
         for fam in families:
             if candidate.lower() in fam.lower():
                 return fam
-    # As a last resort, hand the preferred name to Pango and let it fall back.
+        # Bundled fonts are the guaranteed fallback (always registered).
+        if candidate in _REGISTERED_FAMILIES:
+            return candidate
+    # Last resort: hand the name to Pango and let it handle graceful fallback.
     return preferred
