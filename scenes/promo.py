@@ -27,7 +27,7 @@ config.background_color = theme.BRAND_LIGHT
 
 def _backdrop() -> ImageMobject:
     """Diagonal cream gradient: #ffb8a0 at upper-left/lower-right, #ffefe6 at center."""
-    h, w = 960, 540
+    h, w = config.pixel_height, config.pixel_width
     xs = np.linspace(-1.0, 1.0, w)[np.newaxis, :]
     ys = np.linspace(-1.0, 1.0, h)[:, np.newaxis]
     t = np.clip(np.abs(xs + ys) / 2.0, 0.0, 1.0)[:, :, np.newaxis]
