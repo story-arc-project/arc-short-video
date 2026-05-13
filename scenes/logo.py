@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from manim import (
     Arc,
+    Create,
     DOWN,
     FadeIn,
     FadeOut,
@@ -16,7 +17,6 @@ from manim import (
     Text,
     UP,
     VGroup,
-    Write,
 )
 
 from components.fonts import KText, body_font, fit_to_width, heading_font
@@ -33,16 +33,16 @@ def play(scene: Scene) -> None:
         color=theme.BRAND,
         font_size=88,
     )
-    wordmark.set_color_by_gradient(theme.BRAND_DARK, theme.BRAND)
+    wordmark.set_color_by_gradient(theme.LOGO_GRAD_START, theme.LOGO_GRAD_END)
 
     arc_line = Arc(
-        radius=wordmark.width * 0.42,
-        start_angle=0,
-        angle=PI,
-        stroke_color=theme.BRAND,
+        radius=wordmark.width * theme.LOGO_ARC_RADIUS_RATIO,
+        start_angle=PI / 2 + theme.LOGO_ARC_START_OFFSET,
+        angle=-theme.LOGO_ARC_ANGLE,
+        stroke_color=theme.LOGO_GRAD_START,
         stroke_width=5,
     )
-    arc_line.next_to(wordmark, UP, buff=0.06)
+    arc_line.next_to(wordmark, UP, buff=0.18)
 
     logo_group = VGroup(arc_line, wordmark)
     logo_group.move_to([0, 0.5, 0])
@@ -60,15 +60,16 @@ def play(scene: Scene) -> None:
     cards = getattr(scene, "_hook_cards", None)
     used = 0.0
     if cards is not None:
-        scene.play(FadeOut(cards, scale=0.4), run_time=0.35)
-        used += 0.35
+        scene.play(FadeOut(cards, scale=0.4), run_time=0.30)
+        used += 0.30
 
-    scene.play(Write(wordmark), FadeIn(arc_line), run_time=0.65)
-    used += 0.65
-    scene.play(FadeIn(tagline, shift=DOWN * 0.1), run_time=0.3)
-    used += 0.3
-    scene.wait(0.20)
-    used += 0.20
+    # Arc draws left→right, then wordmark fades in below it.
+    scene.play(Create(arc_line), run_time=0.45)
+    used += 0.45
+    scene.play(FadeIn(wordmark, scale=1.05), run_time=0.35)
+    used += 0.35
+    scene.play(FadeIn(tagline, shift=DOWN * 0.1), run_time=0.25)
+    used += 0.25
 
     setattr(scene, "_logo_wordmark", logo_group)
     setattr(scene, "_logo_tagline", tagline)
