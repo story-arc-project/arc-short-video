@@ -15,7 +15,9 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from manim import PI, Rectangle, Scene, VGroup, config
+import numpy as np
+
+from manim import ImageMobject, Scene, config
 
 from config import theme
 from scenes import analyze, hook, logo, outro, record, use
@@ -23,17 +25,20 @@ from scenes import analyze, hook, logo, outro, record, use
 config.background_color = theme.BRAND_LIGHT
 
 
-def _backdrop() -> VGroup:
-    """Diagonal orange gradient — deep brand orange to soft cream."""
-    rect = Rectangle(
-        width=config.frame_width * 1.7,
-        height=config.frame_height * 1.7,
-        stroke_width=0,
-    )
-    rect.set_color_by_gradient(theme.BRAND_DARK, theme.BRAND, theme.BRAND_LIGHT)
-    rect.rotate(PI / 4)
-    rect.set_z_index(-10)
-    return rect
+def _backdrop() -> ImageMobject:
+    """Diagonal cream gradient: #ffb8a0 at upper-left/lower-right, #ffefe6 at center."""
+    h, w = config.pixel_height, config.pixel_width
+    xs = np.linspace(-1.0, 1.0, w)[np.newaxis, :]
+    ys = np.linspace(-1.0, 1.0, h)[:, np.newaxis]
+    t = np.clip(np.abs(xs + ys) / 2.0, 0.0, 1.0)[:, :, np.newaxis]
+    c_edge = np.array([0xFF, 0xB8, 0xA0], dtype=float)
+    c_mid = np.array([0xFF, 0xEF, 0xE6], dtype=float)
+    rgb = (c_mid * (1.0 - t) + c_edge * t).astype(np.uint8)
+    alpha = np.full((h, w, 1), 255, dtype=np.uint8)
+    mob = ImageMobject(np.concatenate([rgb, alpha], axis=2))
+    mob.height = config.frame_height
+    mob.set_z_index(-10)
+    return mob
 
 
 class ARCPromo(Scene):

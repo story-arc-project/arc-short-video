@@ -44,3 +44,14 @@ CARD_RADIUS    = 0.18
 CARD_BORDER_W  = 1.4
 SAFE_MARGIN_X  = 0.45    # horizontal scene-unit margin for any text
 SAFE_MARGIN_Y  = 0.65    # top/bottom safe area (mobile UI overlays)
+
+# ----- Logo arc geometry -------------------------------------------------
+# Symmetric flat arch above the ARC wordmark.
+# chord ≈ 1.08×wordmark.width so the arc ends at the edges of "A" and "C".
+LOGO_ARC_RADIUS_RATIO = 0.82   # multiplier × wordmark.width
+LOGO_ARC_START_OFFSET = 0.715  # radians offset from PI/2 for symmetric arch
+LOGO_ARC_ANGLE        = 1.43   # sweep in radians (~81.9°)
+
+# ----- Logo gradient colors -----------------------------------------------
+LOGO_GRAD_START = "#e11a02"    # dark red-orange (left side of wordmark)
+LOGO_GRAD_END   = "#f77906"    # vivid orange    (right side of wordmark)

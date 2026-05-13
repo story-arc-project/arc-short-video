@@ -7,12 +7,12 @@ from __future__ import annotations
 
 from manim import (
     Arc,
+    Create,
     DOWN,
     FadeIn,
     FadeOut,
     PI,
     Scene,
-    Text,
     VGroup,
     UP,
 )
@@ -42,16 +42,16 @@ def play(scene: Scene) -> None:
         color=theme.BRAND,
         font_size=100,
     )
-    wordmark.set_color_by_gradient(theme.BRAND_DARK, theme.BRAND)
+    wordmark.set_color_by_gradient(theme.LOGO_GRAD_START, theme.LOGO_GRAD_END)
 
     arc_line = Arc(
-        radius=wordmark.width * 0.42,
-        start_angle=0,
-        angle=PI,
-        stroke_color=theme.BRAND,
+        radius=wordmark.width * theme.LOGO_ARC_RADIUS_RATIO,
+        start_angle=PI / 2 + theme.LOGO_ARC_START_OFFSET,
+        angle=-theme.LOGO_ARC_ANGLE,
+        stroke_color=theme.LOGO_GRAD_START,
         stroke_width=5,
     )
-    arc_line.next_to(wordmark, UP, buff=0.06)
+    arc_line.next_to(wordmark, UP, buff=0.18)
 
     logo_group = VGroup(arc_line, wordmark)
     logo_group.move_to([0, 1.2, 0])
@@ -75,14 +75,14 @@ def play(scene: Scene) -> None:
     )
     url.next_to(tagline, DOWN, buff=0.28)
 
-    scene.play(
-        FadeIn(logo_group, scale=1.12, run_time=0.7),
-        FadeIn(tagline, shift=UP * 0.15, run_time=0.55),
-    )
-    used += 0.7
-
-    scene.play(FadeIn(url, shift=UP * 0.15), run_time=0.45)
+    scene.play(Create(arc_line), run_time=0.45)
     used += 0.45
+    scene.play(FadeIn(wordmark, scale=1.05), run_time=0.35)
+    used += 0.35
+    scene.play(FadeIn(tagline, shift=UP * 0.15), run_time=0.30)
+    used += 0.30
+    scene.play(FadeIn(url, shift=UP * 0.15), run_time=0.30)
+    used += 0.30
 
     if duration > used:
         scene.wait(duration - used)

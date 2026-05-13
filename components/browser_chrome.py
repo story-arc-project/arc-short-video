@@ -1,7 +1,7 @@
 """macOS-style window chrome that frames the product mockup beats."""
 from __future__ import annotations
 
-from manim import Circle, LEFT, RIGHT, Rectangle, RoundedRectangle, VGroup
+from manim import Circle, LEFT, RIGHT, RoundedRectangle, VGroup
 
 from components.fonts import KText, body_font
 from config import theme
@@ -34,7 +34,8 @@ class BrowserFrame(VGroup):
         self.add(outer)
         self.outer = outer
 
-        header = Rectangle(
+        header = RoundedRectangle(
+            corner_radius=0.18,
             width=width,
             height=self.HEADER_HEIGHT,
             fill_color=theme.GRAY_50,

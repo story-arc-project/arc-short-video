@@ -25,7 +25,7 @@ from manim import (
 from components.badge import Badge
 from components.browser_chrome import BrowserFrame
 from components.card import RichExperienceCard
-from components.decor import caption_underline
+from components.decor import caption_underline, feature_label_badge
 from components.fonts import KText, body_font, fit_to_width, heading_font
 from config import content, theme, timing
 
@@ -121,8 +121,10 @@ def play(scene: Scene) -> None:
         font_size=30,
     )
     fit_to_width(caption, 4.0)
-    caption.move_to([0, -2.8, 0])
+    caption.move_to([0, -3.3, 0])
     underline = caption_underline(caption)
+    feat_badge = feature_label_badge("1. 아카이빙")
+    feat_badge.next_to(caption, UP, buff=0.14, aligned_edge=LEFT)
 
     used = 0.0
     intro_anims = drop + [FadeIn(frame, shift=UP * 0.2)]
@@ -148,6 +150,7 @@ def play(scene: Scene) -> None:
     used += 0.4
 
     scene.play(
+        FadeIn(feat_badge, shift=UP * 0.15),
         FadeIn(caption, shift=UP * 0.15),
         Create(underline),
         run_time=0.4,
@@ -156,7 +159,7 @@ def play(scene: Scene) -> None:
 
     setattr(scene, "_record_frame", frame)
     setattr(scene, "_record_inside", VGroup(tabs, cards, cta))
-    setattr(scene, "_record_caption", VGroup(caption, underline))
+    setattr(scene, "_record_caption", VGroup(feat_badge, caption, underline))
 
     if duration > used:
         scene.wait(duration - used)
